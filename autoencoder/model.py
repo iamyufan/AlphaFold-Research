@@ -3,6 +3,7 @@ import torch.nn as nn
 import torchvision.transforms as transforms
 import torchvision
 
+
 # (out_channels, kernel_size, stride, padding)
 encoder_architecture_config = [
     (128, 7, 4, 3),
