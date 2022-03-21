@@ -2,11 +2,11 @@ import numpy as np
 import pickle
 import os
 
-bsu_file_names = os.listdir('/home/hgao53/alphafold_new/alphafold/final_bsu')
+bsu_file_names = os.listdir('/home/hgao53/alphafold_new/alphafold/final_bsu/')
 counter = 1
 
 for bsu_name in bsu_file_names:
-    save_dir = '/home/hgao53/af2_research_model/bsu_padded'
+    save_dir = '/home/hgao53/af2_research_model/bsu_padded/'
     print('\n')
     print('==============='+str(counter)+'===============')
     print('===============bsu===============')
