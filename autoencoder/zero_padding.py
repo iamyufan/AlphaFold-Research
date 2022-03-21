@@ -11,7 +11,7 @@ for bsu_name in bsu_file_names:
     print('==============='+str(counter)+'===============')
     print('===============bsu===============')
     print(bsu_name)
-    with open('/home/hgao53/alphafold_new/alphafold/final_bsu' + bsu_name, 'rb') as f:
+    with open('/home/hgao53/alphafold_new/alphafold/final_bsu/' + bsu_name, 'rb') as f:
         data = pickle.load(f)
 
     ori = data['representations']['pair']
