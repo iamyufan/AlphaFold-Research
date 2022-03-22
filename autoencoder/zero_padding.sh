@@ -6,4 +6,5 @@
 #SBATCH -o zero_padding2048.out
 #SBATCH --time=48:00:00
 
+conda activate af2_model
 python3 zero_padding.py
