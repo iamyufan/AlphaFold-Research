@@ -46,7 +46,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Hyperparameters
 batch_size = 2
-num_epochs = 20
+num_epochs = 1
 learning_rate = 0.005
 
 # Load data
@@ -77,7 +77,7 @@ for epoch in range(num_epochs):
         bsu = bsu.to(device=device)
 
         # ==================forward==================
-        decoded = model(bsu)
+        _, decoded = model(bsu)
         loss = criterion(bsu, decoded)
 
         # ==================backward==================
