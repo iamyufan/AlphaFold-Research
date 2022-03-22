@@ -9,6 +9,6 @@
 #SBATCH -o conv2d_ae_1.out
 #SBATCH -J con2d_ae_1
 
-source activate /home/hgao53/miniconda3/envs/af2_model
+source activate /home/hgao53/miniconda3/envs/af2_test
 
 python3 main.py
