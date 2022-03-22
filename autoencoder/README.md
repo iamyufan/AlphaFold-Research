@@ -2,7 +2,7 @@
 
 The autoencoder is implemented to extract information from the output from Alphafold 2.
 
-The data is formed as **BSUXXXXX.pkl**, which is a dictionary object. The representations are stored at `data['representations']`, which is a dictionary object whose keys include `['distogram', 'experimentally_resolved', 'masked_msa', 'predicted_lddt', 'representations', 'structure_module', 'plddt']`.
+The data is formed as `BSUXXXXX.pkl`, which is a dictionary object. The representations are stored at `data['representations']`, which is a dictionary object whose keys include `['distogram', 'experimentally_resolved', 'masked_msa', 'predicted_lddt', 'representations', 'structure_module', 'plddt']`.
 
 ## Data Preprocess
 
