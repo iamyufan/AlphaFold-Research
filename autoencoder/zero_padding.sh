@@ -6,7 +6,7 @@
 #SBATCH -o zero_padding2048.out
 #SBATCH --time=48:00:00
 
-module load anaconda3
+module load anaconda3/2020.2
 
 eval "$(conda shell.bash hook)"
 
