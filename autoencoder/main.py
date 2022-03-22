@@ -8,7 +8,7 @@ import os
 import pickle
 import pandas as pd
 import scipy.ndimage
-from models import Conv2DAutoEncoder
+from model import Conv2DAutoEncoder
 from torch.utils.data import (
     Dataset,
     DataLoader,
@@ -32,27 +32,27 @@ class BSUDataset(Dataset):
     def get_repre(self, bsu_path):
         # Read bsu and extract representation
         with open(bsu_path, 'rb') as f:
-            data = pickle.load(f)
-        representations = data['representations']['pair']
+            representations = pickle.load(f)
+        # representations = data['representations']['pair']
 
         # Resize the representation
         if self.transform:
-            repre = self.transform(representations)
-        return repre
+            representations = self.transform(representations)
+        return representations
 
 
 # Set device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Hyperparameters
-batch_size = 32
+batch_size = 2
 num_epochs = 20
 learning_rate = 0.005
 
 # Load data
 dataset = BSUDataset(
     names_file = "bsu_names.csv",
-    root_dir = "/home/mick/alphafold-download/final_bsu",
+    root_dir = "/scratch/hgao53/af2_research_model/bsu_padded/",
     transform = transforms.ToTensor(),
 )
 

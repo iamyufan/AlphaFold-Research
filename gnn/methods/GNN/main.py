@@ -2,16 +2,14 @@ import sys
 sys.path.append('../../')  # gnn
 import time
 import argparse
-
 import torch
 import torch.nn.functional as F
 import numpy as np
-
 from utils import EarlyStopping
 from utils import load_data
-
 from model import GCN, GAT
 import dgl
+
 
 def sp_to_spt(mat):
     coo = mat.tocoo()
