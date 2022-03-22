@@ -17,6 +17,8 @@ class GCN(nn.Module):
         super(GCN, self).__init__()
         self.g = g
         self.layers = nn.ModuleList()
+        
+        # fc layers: to make the features of all the nodes become the same dimension
         self.fc_list = nn.ModuleList([nn.Linear(in_dim, num_hidden, bias=True) for in_dim in in_dims])
         for fc in self.fc_list:
             nn.init.xavier_normal_(fc.weight, gain=1.414)
@@ -61,19 +63,24 @@ class GAT(nn.Module):
         self.num_layers = num_layers
         self.gat_layers = nn.ModuleList()
         self.activation = activation
+        
+        # fc layers: to make the features of all the nodes become the same dimension
         self.fc_list = nn.ModuleList([nn.Linear(in_dim, num_hidden, bias=True) for in_dim in in_dims])
         for fc in self.fc_list:
             nn.init.xavier_normal_(fc.weight, gain=1.414)
+            
         # input projection (no residual)
         self.gat_layers.append(GATConv(
             num_hidden, num_hidden, heads[0],
             feat_drop, attn_drop, negative_slope, False, self.activation))
+        
         # hidden layers
         for l in range(1, num_layers):
             # due to multi-head, the in_dim = num_hidden * num_heads
             self.gat_layers.append(GATConv(
                 num_hidden * heads[l-1], num_hidden, heads[l],
                 feat_drop, attn_drop, negative_slope, residual, self.activation))
+            
         # output projection
         self.gat_layers.append(GATConv(
             num_hidden * heads[-2], num_classes, heads[-1],
