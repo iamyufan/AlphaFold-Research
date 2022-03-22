@@ -8,6 +8,7 @@
 #SBATCH --job-name=conv2d_ae_1
 #SBATCH -o conv2d_ae_1.out
 #SBATCH -J con2d_ae_1
+#SBATCH --mem=100G
 
 source activate /home/hgao53/miniconda3/envs/af2_test
 
