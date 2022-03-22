@@ -73,7 +73,7 @@ for epoch in range(num_epochs):
 
     for data in enumerate(dataloader):
         # Get data to cuda if possible
-        bsu, _ = data
+        _, bsu = data
         bsu = bsu.to(device=device)
 
         # ==================forward==================
