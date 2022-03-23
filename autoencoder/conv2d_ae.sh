@@ -10,6 +10,6 @@
 #SBATCH -J con2d_ae_1
 #SBATCH --mem=100G
 
-source activate /home/hgao53/miniconda3/envs/af2_test
+source /home/hgao53/miniconda3/bin/activate /home/hgao53/miniconda3/envs/af2_test
 
 python3 main.py

@@ -29,6 +29,7 @@ def evaluate(model, g, features, labels, mask, loss_func):
 
 
 def main(args):
+    # Load data
     g, features, labels, num_classes, train_idx, val_idx, test_idx, train_mask, \
     val_mask, test_mask, meta_paths = load_data(args['dataset'], feat_type=0)
 
@@ -42,6 +43,8 @@ def main(args):
     train_mask = train_mask.to(args['device'])
     val_mask = val_mask.to(args['device'])
     test_mask = test_mask.to(args['device'])
+    
+    # Set model
     if args['dataset'] == 'Freebase':
         # Add a fc layer to calculate sparse
         model = HAN_freebase(
