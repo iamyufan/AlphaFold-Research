@@ -26,9 +26,8 @@ class BSUDataset(Dataset):
 
     def __getitem__(self, idx):
         bsu_path = os.path.join(self.root_dir, self.names_file.iloc[idx, 0])
-        bsu_repre = self.get_repre(bsu_path)
-        return bsu_repre
-
+        return self.get_repre(bsu_path)
+        
     def get_repre(self, bsu_path):
         # Read bsu and extract representation
         with open(bsu_path, 'rb') as f:
