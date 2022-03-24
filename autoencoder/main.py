@@ -45,7 +45,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Hyperparameters
 batch_size = 1
-num_epochs = 1
+num_epochs = 20
 learning_rate = 0.005
 
 # Load data
