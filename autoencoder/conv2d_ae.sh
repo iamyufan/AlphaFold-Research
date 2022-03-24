@@ -7,7 +7,7 @@
 #SBATCH -p publicgpu
 #SBATCH -q wildfire
 #SBATCH --gres=gpu:1
-#SBATCH --cpu_per_task=8
+#SBATCH --cpus_per_task=8
 #SBATCH --mem=100G
 
 source /home/hgao53/miniconda3/bin/activate /home/hgao53/miniconda3/envs/af2_test
