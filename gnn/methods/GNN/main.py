@@ -28,6 +28,9 @@ def mat2tensor(mat):
     return sp_to_spt(mat)
 
 def regression_loss(logits, labels):
+    # print('====================')
+    # print(logits.shape)
+    # print(labels.shape)
     return F.mse_loss(logits, torch.reshape(labels, logits.shape))
 
 def run_model(args):
@@ -136,7 +139,7 @@ def run_model(args):
             ## print validation info
             print('Epoch {:05d} | Val_Loss {:.4f} | Time(s) {:.4f}'.format(
                 epoch, val_loss.item(), t_end - t_start))
-            ## early stopping
+            # early stopping
             early_stopping(val_loss, net)
             if early_stopping.early_stop:
                 print('Early stopping!')
@@ -149,16 +152,14 @@ def run_model(args):
         with torch.no_grad():
             logits = net(features_list)
             test_logits = logits[test_idx]
-            pred = test_logits.cpu().numpy().argmax(axis=1)
-            onehot = np.eye(num_classes, dtype=np.int32)
             # dl.gen_file_for_evaluate(test_idx=test_idx,label=pred)
-            pred = onehot[pred]
+            pred = test_logits.cpu().numpy()
             print(dl.evaluate(pred))
 
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser(description='GNN')
-    ap.add_argument('--feats-type', type=int, default=3,
+    ap.add_argument('--feats-type', type=int, default=0,
                     help='Type of the node features used. ' +
                          '0 - loaded features; ' +
                          '1 - only target node features (zero vec for others); ' +
@@ -177,7 +178,7 @@ if __name__ == '__main__':
     ap.add_argument('--dropout', type=float, default=0.5)
     ap.add_argument('--weight-decay', type=float, default=1e-4)
     ap.add_argument('--slope', type=float, default=0.05)
-    ap.add_argument('--dataset', type=str)
+    ap.add_argument('--dataset', type=str, default='myData')
 
     args = ap.parse_args()
     run_model(args)

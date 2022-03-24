@@ -175,7 +175,7 @@ class data_loader:
                 f.write(f"{nid}\t\t{self.get_node_type(nid)}\t{l}\n")
 
     def evaluate(self, pred):
-        print(f"{bcolors.WARNING}Warning: If you want to obtain test score, please submit online on biendata.{bcolors.ENDC}")
+        # print(f"{bcolors.WARNING}Warning: If you want to obtain test score, please submit online on biendata.{bcolors.ENDC}")
         y_true = self.labels_test['data'][self.labels_test['mask']]
         # micro = f1_score(y_true, pred, average='micro')
         # macro = f1_score(y_true, pred, average='macro')
@@ -198,25 +198,26 @@ class data_loader:
             data: a numpy matrix with shape (self.nodes['total'], self.labels['num_classes'])
             mask: to indicate if that node is labeled, if False, that line of data is masked
         """
-        labels = {'num_classes':0, 'total':0, 'data':None, 'mask':None}
+        labels = {'num_classes':0, 'total':0, 'data':None, 'mask':None, 'dtype':None}
         nc = 1
         mask = np.zeros(self.nodes['total'], dtype=bool)
         data = [None for i in range(self.nodes['total'])]
 
         with open(os.path.join(self.path, name), 'rb') as f:
             label_df = pickle.load(f)
-        new_data = np.zeros((self.nodes['total'], nc), dtype=int)
+        new_data = np.zeros((self.nodes['total'], nc), dtype=float)
+        nc = 1
         for i in range(label_df.shape[0]):
-            node_id, node_type, node_label = int(label_df.iloc[i, 0]), int(label_df.iloc[i, 1]), label_df.iloc[i, 2]
-            nc = 1
+            node_id, node_type, node_label = int(label_df.iloc[i, 0]), int(label_df.iloc[i, 1]), float(label_df.iloc[i, 2])
             mask[node_id] = True
             data[node_id] = node_label
-            # labels['count'][node_type] += 1
+            dtype = type(node_label)
             labels['total'] += 1
             new_data[node_id, 0] = node_label
         labels['num_classes'] = nc
         labels['data'] = new_data
         labels['mask'] = mask
+        labels['dtype'] = dtype
         return labels
 
     def get_node_type(self, node_id):

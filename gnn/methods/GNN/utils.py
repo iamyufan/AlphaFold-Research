@@ -15,7 +15,7 @@ def load_data(prefix='myData'):
         else:
             features.append(th)
     adjM = sum(dl.links['data'].values())
-    labels = np.zeros((dl.nodes['count'][0], dl.labels_train['num_classes']), dtype=int)
+    labels = np.zeros((dl.nodes['count'][0], dl.labels_train['num_classes']), dtype=float)
     val_ratio = 0.2
     train_idx = np.nonzero(dl.labels_train['mask'])[0]
     np.random.shuffle(train_idx)
@@ -27,8 +27,9 @@ def load_data(prefix='myData'):
     test_idx = np.nonzero(dl.labels_test['mask'])[0]
     labels[train_idx] = dl.labels_train['data'][train_idx]
     labels[val_idx] = dl.labels_train['data'][val_idx]
-    if prefix != 'IMDB':
-        labels = labels.argmax(axis=1)
+    # labels[test_idx] = dl.labels_test['data'][test_idx]
+    # if prefix != 'IMDB':
+    #     labels = labels.argmax(axis=1)
     train_val_test_idx = {}
     train_val_test_idx['train_idx'] = train_idx
     train_val_test_idx['val_idx'] = val_idx
