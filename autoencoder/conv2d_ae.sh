@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#SBATCH --job-name=conv2d_ae
-#SBATCH --output=conv2d_ae.out
-#SBATCH --error=conv2d_ae.err
+#SBATCH --job-name=conv2d_ae_20
+#SBATCH --output=conv2d_ae_20.out
+#SBATCH --error=conv2d_ae_20.err
 #SBATCH -t 0-72:00:00
 #SBATCH -p publicgpu
 #SBATCH -q wildfire
