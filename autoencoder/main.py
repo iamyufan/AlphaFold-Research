@@ -7,37 +7,13 @@ import torchvision
 import os
 import pickle
 import pandas as pd
-import scipy.ndimage
-from model import Conv2DAutoEncoder
+from models.model_1 import Conv2DAutoEncoder
+from models.model_2 import Conv2DAutoEncoder
 from torch.utils.data import (
     Dataset,
     DataLoader,
 )  # PyTorch's data loading module
-
-
-class BSUDataset(Dataset):
-    def __init__(self, names_file, root_dir, transform=None):
-        self.names_file = pd.read_csv(names_file)
-        self.root_dir = root_dir
-        self.transform = transform
-
-    def __len__(self):
-        return len(self.names_file)
-
-    def __getitem__(self, idx):
-        bsu_path = os.path.join(self.root_dir, self.names_file.iloc[idx, 0])
-        return self.get_repre(bsu_path)
-        
-    def get_repre(self, bsu_path):
-        # Read bsu and extract representation
-        with open(bsu_path, 'rb') as f:
-            representations = pickle.load(f)
-        # representations = data['representations']['pair']
-
-        # Resize the representation
-        if self.transform:
-            representations = self.transform(representations)
-        return representations
+from data.dataset import BSUDataset
 
 
 # Set device

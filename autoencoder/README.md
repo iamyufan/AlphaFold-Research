@@ -12,7 +12,7 @@ Here, `zero_padding.py` is to take the tensors of the representations to be the 
 
 ## Network Structure
 
-### Conv2D Autoencoder
+### Conv2D Autoencoder (1)
 
 The network architecture of the encoder is given by:
 
@@ -32,7 +32,7 @@ encoder_architecture_config = [
     (4, 3, 2, 1),   # (16 * 16 * 4)
     [(2, 1, 1, 0), (4, 3, 1, 1), 2],    # (16 * 16 * 4)
     (4, 3, 1, 1),   # (16 * 16 * 4)
-    (1, 1, 1, 0)    # (16 * 16 * 1)
+    (1, 1, 1, 0),   # (16 * 16 * 1)
 ]
 ```
 
@@ -57,6 +57,41 @@ decoder_architecture_config = [
     (128, 5, 2, 2, 1),  # (1024 * 1024 * 128)
     (128, 5, 1, 2, 0),  # (1024 * 1024 * 128)
     (128, 5, 2, 2, 1),  # (2048 * 2048 * 128)
+    (128, 3, 1, 1, 0),  # (2048 * 2048 * 128)
+]
+```
+
+### Conv2D Autoencoder (2)
+
+The network architecture of the encoder is given by:
+
+```python
+# (out_channels, kernel_size, stride, padding)
+encoder_architecture_config = [
+    (128, 7, 4, 3),
+    (64, 5, 2, 2),
+    (32, 3, 2, 1),  # (128 * 128 * 64)
+    (16, 3, 2, 1),  # (64 * 64 * 32)
+    (8, 3, 2, 1),   # (32 * 32 * 8)
+    (4, 3, 2, 1),   # (16 * 16 * 4)
+    (1, 1, 1, 0),   # (16 * 16 * 1)
+]
+```
+
+The network architecture of the decoder is given by:
+
+```python
+# (out_channels, kernel_size, stride, padding, output_padding)
+decoder_architecture_config = [
+    (4, 3, 1, 1, 0),   # (16 * 16 * 4)
+    (8, 3, 2, 1, 1),   # (32 * 32 * 8)
+    (16, 3, 2, 1, 1),   # (64 * 64 * 16)
+    (32, 1, 1, 0, 0),  # (64 * 64 * 32)
+    (64, 3, 2, 1, 1),  # (128 * 128 * 64)
+    (64, 3, 2, 1, 1),  # (256 * 256 * 64)
+    (96, 3, 2, 1, 1),  # (512 * 512 * 96)
+    (128, 5, 2, 2, 1),  # (1024 * 1024 * 128)
+    (128, 5, 1, 2, 0),  # (1024 * 1024 * 128)
     (128, 3, 1, 1, 0),  # (2048 * 2048 * 128)
 ]
 ```
