@@ -64,5 +64,7 @@ for epoch in range(num_epochs):
     # ==================log==================
     print('epoch [{}/{}], loss:{:.4f}'
           .format(epoch+1, num_epochs, total_loss))
+    
+    torch.save(model.state_dict(), './conv2d_autoencoder_{0}.pth'.format(epoch))
 
-torch.save(model.state_dict(), './conv2d_autoencoder.pth')
+# torch.save(model.state_dict(), './conv2d_autoencoder.pth')
