@@ -48,7 +48,7 @@ for epoch in range(num_epochs):
 
     for data in enumerate(dataloader):
         # Get data to cuda if possible
-        _, bsu = data
+        i, bsu = data
         bsu = bsu.to(device=device)
 
         # ==================forward==================
@@ -61,9 +61,9 @@ for epoch in range(num_epochs):
         optimizer.step()
         total_loss += loss.data
     
-    # ==================log==================
-    print('epoch [{}/{}], loss:{:.4f}'
-          .format(epoch+1, num_epochs, total_loss))
+        # ==================log==================
+        print('epoch [{}/{}] -- batch [{}] loss:{:.4f}'
+            .format(epoch+1, num_epochs, i, total_loss))
     
     torch.save(model.state_dict(), './conv2d_autoencoder_{0}.pth'.format(epoch))
 

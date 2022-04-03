@@ -8,7 +8,23 @@ The data is formed as `BSUXXXXX.pkl`, which is a dictionary object. The represen
 
 The shape of the representations are not identical across BSUs. So, we need to preprocess the tensors to be the same shape.
 
+### Method 1
+
+**1. Pad the tensors to (2048, 2048, 128)**
+
 Here, `zero_padding.py` is to take the tensors of the representations to be the shape of `(2048, 2048, 128)`, where the extra entries are filled with zeros.
+
+**2. Treat each (2048, 2048, 128) tensor as one item**
+
+### Method 2
+
+**1. Pad the tensors to (2048, 2048, 128)**
+
+Here, `zero_padding.py` is to take the tensors of the representations to be the shape of `(2048, 2048, 128)`, where the extra entries are filled with zeros.
+
+**2. Split the tensor by channel**
+
+Split the (2048, 2048, 128) tensor by channel so the one original tensor will be 128 tensors of size (2048, 2048, 1).
 
 ## Network Structure
 
