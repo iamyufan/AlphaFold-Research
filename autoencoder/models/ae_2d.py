@@ -28,7 +28,7 @@ encoder_architecture_config = [
 # (out_channels, kernel_size, stride, padding, output_padding)
 decoder_architecture_config = [
     # encoded: 16x16x1
-    (2, 3, 2, 1, 1)
+    (2, 3, 2, 1, 1),
     # 32x32x2
     (4, 3, 2, 1, 1),
     # 64x64x4
