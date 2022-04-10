@@ -7,12 +7,9 @@ import torchvision
 import os
 import pickle
 import pandas as pd
-from models.model_1 import Conv2DAutoEncoder
-from models.model_2 import Conv2DAutoEncoder
-from torch.utils.data import (
-    Dataset,
-    DataLoader,
-)  # PyTorch's data loading module
+from models.ae_2d import Conv2DAutoEncoder
+# from models.model_2 import Conv2DAutoEncoder
+from torch.utils.data import DataLoader # PyTorch's data loading module
 from data.dataset import BSUDataset
 
 
