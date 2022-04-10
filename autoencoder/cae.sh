@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#SBATCH -N 1
-#SBATCH -n 8
 #SBATCH --job-name=ae_2d_RTX2080
 #SBATCH --output=ae_2d_RTX2080.%j.out
 #SBATCH --error=ae_2d_RTX2080.%j.err
