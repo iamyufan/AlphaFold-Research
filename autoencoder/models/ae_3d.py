@@ -6,13 +6,19 @@ import torchvision
 
 # (out_channels, kernel_size, stride, padding)
 encoder_architecture_config = [
-    (128, 7, 4, 3),
-    (64, 5, 2, 2),
-    (32, 3, 2, 1),  # (128 * 128 * 64)
-    (16, 3, 2, 1),  # (64 * 64 * 32)
-    (8, 3, 2, 1),   # (32 * 32 * 8)
-    (4, 3, 2, 1),   # (16 * 16 * 4)
-    (1, 1, 1, 0),   # (16 * 16 * 1)
+    # input: 2048x2048x128x1
+    (1, 3, 3, 3),
+    # 686x686x44x1
+    (1, 3, 3, 3),
+    # 230x230x16x1
+    (1, 3, 3, 3),
+    # 78x78x7x1
+    (1, 3, 3, 3),
+    # 28x28x4x1
+    (1, 3, 3, 3),
+    # 11x11x3x1
+    (1, 3, 3, 3),
+    # 5x5x3x1
 ]
 
 # (out_channels, kernel_size, stride, padding, output_padding)

@@ -1,7 +1,6 @@
 #!/bin/bash
 
-#SBATCH -N 1
-#SBATCH -n 1
+#SBATCH -n 80
 #SBATCH --job-name=GTX1080
 #SBATCH --output=GTX1080.%j.out
 #SBATCH --error=GTX1080.%j.err
