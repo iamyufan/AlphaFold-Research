@@ -6,9 +6,10 @@
 #SBATCH --output=ae_2d.%j.out
 #SBATCH --error=ae_2d.%j.err
 #SBATCH -t 0-72:00:00
-#SBATCH -p publicgpu
+#SBATCH -p gpu
 #SBATCH -q wildfire
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:2
+#SBATCH -C V100
 #SBATCH --cpus-per-task=10
 #SBATCH --mem=100G
 
