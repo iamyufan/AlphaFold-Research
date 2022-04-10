@@ -1,15 +1,15 @@
 #!/bin/bash
 
-#SBATCH -N 8
+#SBATCH -N 1
 #SBATCH -n 1
-#SBATCH --job-name=ae_2d
-#SBATCH --output=ae_2d.%j.out
-#SBATCH --error=ae_2d.%j.err
+#SBATCH --job-name=ae_2d_RTX2080
+#SBATCH --output=ae_2d_RTX2080.%j.out
+#SBATCH --error=ae_2d_RTX2080.%j.err
 #SBATCH -t 0-72:00:00
 #SBATCH -p gpu
 #SBATCH -q wildfire
 #SBATCH --gres=gpu:2
-#SBATCH -C V100
+#SBATCH -C RTX2080
 #SBATCH --cpus-per-task=10
 #SBATCH --mem=100G
 
