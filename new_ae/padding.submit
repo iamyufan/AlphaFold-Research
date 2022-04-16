@@ -1,0 +1,11 @@
+#!/bin/bash
+
+#SBATCH --job-name=padding
+#SBATCH --output=padding.%j.out
+#SBATCH --error=padding.%j.err
+#SBATCH --time=48:00:00
+#SBATCH --cpus-per-task=10
+
+source activate /home/hgao53/miniconda3/envs/af2_model
+
+python3 zero_padding.py
