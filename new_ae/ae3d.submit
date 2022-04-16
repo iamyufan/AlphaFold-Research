@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#SBATCH --job-name=ae_2d
-#SBATCH --output=ae_2d.%j.out
-#SBATCH --error=ae_2d.%j.err
+#SBATCH --job-name=ae3d
+#SBATCH --output=ae3d.%j.out
+#SBATCH --error=ae3d.%j.err
 #SBATCH -t 0-72:00:00
 #SBATCH -p gpu
 #SBATCH -q wildfire
@@ -13,4 +13,4 @@
 
 source /home/hgao53/miniconda3/bin/activate /home/hgao53/miniconda3/envs/af2_test
 
-python3 ae.py
+python3 ae3d.py

@@ -25,9 +25,12 @@ class AF2OutputDataset(Dataset):
     def get_repre(self, bsu_path):
         # Read bsu and extract representation
         with open(bsu_path, 'rb') as f:
-            representation = np.load(f, allow_pickle=True)
+            representation = pickle.load(f)
+        
+        representation = representation['representations']['pair']
+        padded = np.pad(representation, ((0, 2048-representation.shape[0]), (0, 2048-representation.shape[0]), (0, 0)), 'constant')
 
         # Resize the representation
         if self.transform:
-            representation = self.transform(representation)
-        return representation
+            padded = self.transform(padded)
+        return padded

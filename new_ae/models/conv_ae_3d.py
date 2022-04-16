@@ -6,55 +6,54 @@ import torchvision
 
 # (out_channels, kernel_size, stride, padding)
 encoder_architecture_config = [
-    # input: 2048x2048x1
-    (1, 7, 5, 2),
-    # 410x410x1
-    (1, 5, 3, 1),
-    # 136x136x1
-    (1, 3, 2, 1),
-    # 68x68x1
-    (1, 3, 2, 1),
-    # 34x34x1
+    # input: 2048x2048x128
+    (1, (4, 4, 4), 4, 1),
+    # 512x512x32
+    (1, (4, 4, 4), 4, 1),
+    # 128x128x8
+    (1, (4, 4, 4), 4, 1),
+    # 32x32x2
 ]
 
-# (out_channels, kernel_size, stride, padding, output_padding)
+# (out_channels, kernel_size, scale)
 decoder_architecture_config = [
-    # encoded: 34x34x1
-    (1, 3, 2, 1, 1),
-    # 68x68x1
-    (1, 3, 2, 1, 1),
-    # 136x136x1
-    (1, 5, 3, 1, 2),
-    # 410x410x1
-    (1, 7, 5, 3, 2),
-    # 2048x2048x1
+    # encoded: 32x32x2
+    (1, (1, 1, 1), 4),
+    # 128x128x8
+    (1, (1, 1, 1), 4),
+    # 512x512x32
+    (1, (1, 1, 1), 4),
+    # 2048x2048x128
 ]
 
-class Conv2dBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, **kwargs):
-        super(Conv2dBlock, self).__init__()
-        self.conv = nn.Conv2d(in_channels, out_channels, bias=False, **kwargs)
-        self.batchnorm = nn.BatchNorm2d(out_channels)
-        self.leakyrelu = nn.LeakyReLU(0.1)
-
+class Conv_block(nn.Module):
+    def __init__(self, ch_in, ch_out, k_size, stride=1, p=1, num_groups=1):
+        super(Conv_block, self).__init__()
+        self.conv = nn.Sequential( 
+            nn.Conv3d(ch_in, ch_out, kernel_size=k_size, stride=stride, padding=p),  
+            nn.BatchNorm3d(ch_out),
+            nn.ReLU(inplace=True),
+        )
     def forward(self, x):
-        return self.leakyrelu(self.batchnorm(self.conv(x)))
+        out = self.conv(x)
+        return out
 
 
-class ConvTranspose2dBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, **kwargs):
-        super(ConvTranspose2dBlock, self).__init__()
-        self.convtrans = nn.ConvTranspose2d(in_channels, out_channels, bias=False, **kwargs)
-        self.batchnorm = nn.BatchNorm2d(out_channels)
-        self.leakyrelu = nn.LeakyReLU(0.1)
-
+class up_conv(nn.Module):
+    "Reduce the number of features by 2 using Conv with kernel size 1x1x1 and double the spatial dimension using 3D trilinear upsampling"
+    def __init__(self, ch_in, ch_out, k_size=1, scale=2, align_corners=False):
+        super(up_conv, self).__init__()
+        self.up = nn.Sequential(
+            nn.Conv3d(ch_in, ch_out, kernel_size=k_size),
+            nn.Upsample(scale_factor=scale, mode='trilinear', align_corners=align_corners),
+        )
     def forward(self, x):
-        return self.leakyrelu(self.batchnorm(self.convtrans(x)))
+        return self.up(x)
     
     
-class Conv2DAutoEncoder(nn.Module):
+class Conv3DAutoEncoder(nn.Module):
     def __init__(self, in_channel=128, **kwargs):
-        super(Conv2DAutoEncoder, self).__init__()
+        super(Conv3DAutoEncoder, self).__init__()
         self.encoder_archi = encoder_architecture_config
         self.decoder_archi = decoder_architecture_config
         self.encoder, self.latent_channels = self._build_encoder(self.encoder_archi, in_channel)
@@ -71,7 +70,7 @@ class Conv2DAutoEncoder(nn.Module):
         for x in architecture:
             if type(x) == tuple:
                 layers += [
-                    Conv2dBlock(
+                    Conv_block(
                         in_channels, x[0], kernel_size=x[1], stride=x[2], padding=x[3],
                     )
                 ]
@@ -84,7 +83,7 @@ class Conv2DAutoEncoder(nn.Module):
 
                 for _ in range(num_repeats):
                     layers += [
-                        Conv2dBlock(
+                        Conv_block(
                             in_channels,
                             conv1[0],
                             kernel_size=conv1[1],
@@ -93,7 +92,7 @@ class Conv2DAutoEncoder(nn.Module):
                         )
                     ]
                     layers += [
-                        Conv2dBlock(
+                        Conv_block(
                             conv1[0],
                             conv2[0],
                             kernel_size=conv2[1],
@@ -111,13 +110,11 @@ class Conv2DAutoEncoder(nn.Module):
         for x in architecture:
             if type(x) == tuple:
                 layers += [
-                    ConvTranspose2dBlock(
+                    up_conv(
                         in_channels, 
                         x[0], 
                         kernel_size=x[1], 
-                        stride=x[2], 
-                        padding=x[3], 
-                        output_padding=x[4]
+                        scale=x[2]
                     )
                 ]
                 in_channels = x[0]
@@ -129,25 +126,22 @@ class Conv2DAutoEncoder(nn.Module):
 
                 for _ in range(num_repeats):
                     layers += [
-                        ConvTranspose2dBlock(
+                        up_conv(
                             in_channels,
                             conv1[0],
                             kernel_size=conv1[1],
-                            stride=conv1[2],
-                            padding=conv1[3],
-                            output_padding=conv1[4]
+                            scale=conv1[2]
                         )
                     ]
                     layers += [
-                        ConvTranspose2dBlock(
+                        up_conv(
                             conv1[0],
                             conv2[0],
                             kernel_size=conv2[1],
-                            stride=conv2[2],
-                            padding=conv2[3],
-                            output_padding=conv2[4]
+                            scale=conv2[2]
                         )
                     ]
                     in_channels = conv2[0]
 
+        layers += Conv_block(1, 1, k_size=3, stride=1, p=1)
         return nn.Sequential(*layers)

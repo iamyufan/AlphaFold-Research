@@ -8,7 +8,7 @@ import torchvision
 import os
 import pickle
 import pandas as pd
-from models.conv_ae_2d import Conv2DAutoEncoder
+from models.conv_ae_3d import Conv3DAutoEncoder
 from torch.utils.data import DataLoader 
 from data.dataset import AF2OutputDataset
 
@@ -24,14 +24,14 @@ learning_rate = 0.005
 # Load data
 dataset = AF2OutputDataset(
     names_file = "names3d.csv",
-    root_dir = "/scratch/hgao53/af2_research_model/af2_output/",
+    root_dir = "/scratch/hgao53/final_bsu/",
     transform = transforms.ToTensor(),
 )
 
 dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True)
 
 # Model
-model = Conv2DAutoEncoder(in_channel=1).to(device)
+model = Conv3DAutoEncoder(in_channel=1).to(device)
 
 # Loss and optimizer
 criterion = nn.MSELoss()
@@ -73,4 +73,4 @@ for epoch in range(num_epochs):
     
     epoch_time_end=time.time()
     print('=== epoch [{}/{}] -- time:{}\n'.format(epoch, num_epochs, epoch_time_end-epoch_time_start))
-    torch.save(model.state_dict(), './conv2d_autoencoder_{0}.pth'.format(epoch))
+    torch.save(model.state_dict(), './conv_ae_3d_{0}.pth'.format(epoch))
