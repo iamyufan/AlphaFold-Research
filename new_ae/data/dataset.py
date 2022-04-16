@@ -25,7 +25,7 @@ class AF2OutputDataset(Dataset):
     def get_repre(self, bsu_path):
         # Read bsu and extract representation
         with open(bsu_path, 'rb') as f:
-            representation = np.load(f)
+            representation = np.load(f, allow_pickle=True)
 
         # Resize the representation
         if self.transform:
