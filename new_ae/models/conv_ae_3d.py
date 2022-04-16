@@ -27,10 +27,10 @@ decoder_architecture_config = [
 ]
 
 class Conv_block(nn.Module):
-    def __init__(self, ch_in, ch_out, k_size, stride=1, p=1, num_groups=1):
+    def __init__(self, ch_in, ch_out, k_size, stride=1, padding=1, num_groups=1):
         super(Conv_block, self).__init__()
         self.conv = nn.Sequential( 
-            nn.Conv3d(ch_in, ch_out, kernel_size=k_size, stride=stride, padding=p),  
+            nn.Conv3d(ch_in, ch_out, kernel_size=k_size, stride=stride, padding=padding),  
             nn.BatchNorm3d(ch_out),
             nn.ReLU(inplace=True),
         )
@@ -71,7 +71,7 @@ class Conv3DAutoEncoder(nn.Module):
             if type(x) == tuple:
                 layers += [
                     Conv_block(
-                        in_channels, x[0], kernel_size=x[1], stride=x[2], padding=x[3],
+                        in_channels, x[0], k_size=x[1], stride=x[2], padding=x[3],
                     )
                 ]
                 in_channels = x[0]

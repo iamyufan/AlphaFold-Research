@@ -66,10 +66,8 @@ for epoch in range(num_epochs):
         batch_time_end=time.time()
     
         # ==================log==================
-        print('=== epoch [{}/{}] -- batch [{}] -- time:{}'
-              .format(epoch, num_epochs, i, batch_time_end-batch_time_start))
-        print('=== epoch [{}/{}] -- batch [{}] loss:{:.4f}'
-            .format(epoch+1, num_epochs, i, total_loss))
+        print('=== epoch [{}/{}] -- batch [{}] -- time:{} -- loss:{:.4f}'
+              .format(epoch, num_epochs, i, batch_time_end-batch_time_start, total_loss))
     
     epoch_time_end=time.time()
     print('=== epoch [{}/{}] -- time:{}\n'.format(epoch, num_epochs, epoch_time_end-epoch_time_start))
