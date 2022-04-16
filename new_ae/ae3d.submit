@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #SBATCH --job-name=ae3d
-#SBATCH --output=./output/ae3d.%j.out
-#SBATCH --error=./output/ae3d.%j.err
+#SBATCH --output=ae3d.%j.out
+#SBATCH --error=ae3d.%j.err
 #SBATCH -t 0-72:00:00
 #SBATCH -p gpu
 #SBATCH -q wildfire
