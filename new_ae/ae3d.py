@@ -23,7 +23,7 @@ learning_rate = 0.005
 
 # Load data
 dataset = AF2OutputDataset(
-    names_file = "names.csv",
+    names_file = "names3d.csv",
     root_dir = "/scratch/hgao53/af2_research_model/af2_output/",
     transform = transforms.ToTensor(),
 )
