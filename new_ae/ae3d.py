@@ -39,6 +39,8 @@ optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
 print(len(dataset))
 
+print('================= Begin Training =================')
+
 # Train model
 for epoch in range(num_epochs):
     total_loss = 0

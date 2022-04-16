@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#SBATCH --job-name=ae_new
-#SBATCH --output=ae_new.%j.out
-#SBATCH --error=ae_new.%j.err
+#SBATCH --job-name=ae_2d
+#SBATCH --output=ae_2d.%j.out
+#SBATCH --error=ae_2d.%j.err
 #SBATCH -t 0-72:00:00
 #SBATCH -p gpu
 #SBATCH -q wildfire
