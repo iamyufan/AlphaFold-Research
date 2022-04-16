@@ -3,14 +3,10 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torchvision.transforms as transforms
-import torchvision
 import os
 import pickle
 import pandas as pd
-from torch.utils.data import (
-    Dataset,
-    DataLoader,
-)  # PyTorch's data loading module
+from torch.utils.data import Dataset
 
 
 class BSUDataset(Dataset):
