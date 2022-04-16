@@ -8,4 +8,4 @@
 
 source activate /home/hgao53/miniconda3/envs/af2_model
 
-python3 zero_padding.py
+python3 padding.py
