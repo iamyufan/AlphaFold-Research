@@ -35,16 +35,17 @@ decoder_architecture_config = [
     (128, 3, 1, 1, 0),  # (2048 * 2048 * 128)
 ]
 
-class Conv2dBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, **kwargs):
-        super(Conv2dBlock, self).__init__()
-        self.conv = nn.Conv2d(in_channels, out_channels, bias=False, **kwargs)
-        self.batchnorm = nn.BatchNorm2d(out_channels)
-        self.leakyrelu = nn.LeakyReLU(0.1)
-
+class Conv3dBlock(nn.Module):
+    def __init__(self, ch_in, ch_out, k_size, stride=1, p=1, num_groups=1):
+        super(Conv3dBlock, self).__init__()
+        self.conv = nn.Sequential( 
+            nn.Conv3d(ch_in, ch_out, kernel_size=k_size, stride=stride, padding=p),  
+            nn.BatchNorm3d(ch_out),
+            nn.ReLU(inplace=True),
+        )
     def forward(self, x):
-        return self.leakyrelu(self.batchnorm(self.conv(x)))
-
+        out = self.conv(x)
+        return out
 
 class ConvTranspose2dBlock(nn.Module):
     def __init__(self, in_channels, out_channels, **kwargs):
