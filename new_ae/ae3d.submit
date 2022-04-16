@@ -7,7 +7,7 @@
 #SBATCH -p gpu
 #SBATCH -q wildfire
 #SBATCH --gres=gpu:2
-#SBATCH -C V100
+#SBATCH -C RTX2080
 #SBATCH --cpus-per-task=10
 #SBATCH --mem=100G
 
