@@ -3,7 +3,7 @@ import pickle
 import os
 
 ori_bsu_dir = '/home/hgao53/alphafold_new/alphafold/final_bsu/'
-save_dir = '/scratch/hgao53/af2_research_model/bsu_padded/'
+save_dir = '/scratch/hgao53/padded_bsu/'
 
 bsu_file_names = os.listdir(ori_bsu_dir)
 counter = 1
