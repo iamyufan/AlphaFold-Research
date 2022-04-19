@@ -13,11 +13,15 @@ encoder_architecture_config = [
     # 128x128x8
     (1, (4, 4, 4), 4, 1),
     # 32x32x2
+    (1, (2, 2, 2), 2, 0),
+    # 16x16x1
 ]
 
 # (out_channels, kernel_size, scale)
 decoder_architecture_config = [
-    # encoded: 32x32x2
+    # encoded: 16x16x1
+    (1, (1, 1, 1), 2),
+    # 32x32x2
     (1, (1, 1, 1), 4),
     # 128x128x8
     (1, (1, 1, 1), 4),
@@ -86,7 +90,7 @@ class Conv3DAutoEncoder(nn.Module):
                         Conv_block(
                             in_channels,
                             conv1[0],
-                            kernel_size=conv1[1],
+                            k_size=conv1[1],
                             stride=conv1[2],
                             padding=conv1[3],
                         )
@@ -95,7 +99,7 @@ class Conv3DAutoEncoder(nn.Module):
                         Conv_block(
                             conv1[0],
                             conv2[0],
-                            kernel_size=conv2[1],
+                            k_size=conv2[1],
                             stride=conv2[2],
                             padding=conv2[3],
                         )
@@ -129,7 +133,7 @@ class Conv3DAutoEncoder(nn.Module):
                         up_conv(
                             in_channels,
                             conv1[0],
-                            kernel_size=conv1[1],
+                            k_size=conv1[1],
                             scale=conv1[2]
                         )
                     ]
@@ -137,7 +141,7 @@ class Conv3DAutoEncoder(nn.Module):
                         up_conv(
                             conv1[0],
                             conv2[0],
-                            kernel_size=conv2[1],
+                            k_size=conv2[1],
                             scale=conv2[2]
                         )
                     ]
