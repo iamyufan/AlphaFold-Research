@@ -117,7 +117,7 @@ class Conv3DAutoEncoder(nn.Module):
                     up_conv(
                         in_channels, 
                         x[0], 
-                        kernel_size=x[1], 
+                        k_size=x[1], 
                         scale=x[2]
                     )
                 ]
