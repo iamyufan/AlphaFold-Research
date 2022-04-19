@@ -24,7 +24,7 @@ learning_rate = 0.005
 # Load data
 dataset = AF2OutputDataset(
     names_file = "names3d.csv",
-    root_dir = "/scratch/hgao53/final_bsu/",
+    root_dir = "/home/hgao53/alphafold_new/alphafold/final_bsu/",
     transform = transforms.ToTensor(),
 )
 
