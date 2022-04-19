@@ -147,5 +147,5 @@ class Conv3DAutoEncoder(nn.Module):
                     ]
                     in_channels = conv2[0]
 
-        layers += Conv_block(1, 1, k_size=3, stride=1, p=1)
+        layers += Conv_block(1, 1, k_size=3, stride=1, padding=1)
         return nn.Sequential(*layers)
