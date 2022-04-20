@@ -27,10 +27,11 @@ class AF2OutputDataset(Dataset):
         with open(bsu_path, 'rb') as f:
             representation = pickle.load(f)
         
-        # representation = representation['representations']['pair']
-        # padded = np.pad(representation, ((0, 2048-representation.shape[0]), (0, 2048-representation.shape[0]), (0, 0)), 'constant')
-
-        # Resize the representation
         if self.transform:
             representation = self.transform(representation)
+
+        representation = representation.unsqueeze(3)
+
+        representation = representation.permute(3, 0, 1, 2)
+
         return representation

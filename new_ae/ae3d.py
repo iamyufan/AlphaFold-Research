@@ -1,4 +1,5 @@
 from numpy import True_
+import numpy as np
 import time
 import torch
 import torch.nn as nn
@@ -25,7 +26,7 @@ learning_rate = 0.01
 dataset = AF2OutputDataset(
     names_file = "n.csv",
     root_dir = "/scratch/hgao53/padded_bsu",
-    transform = transforms.ToTensor(),
+    transform = torch.from_numpy,
 )
 
 dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True)
