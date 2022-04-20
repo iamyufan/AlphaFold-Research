@@ -13,4 +13,4 @@
 
 source /home/hgao53/miniconda3/bin/activate /home/hgao53/miniconda3/envs/af2_test
 
-python3 ae3d.py
+python3 run_ae.py
