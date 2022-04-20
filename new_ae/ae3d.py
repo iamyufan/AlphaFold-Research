@@ -10,21 +10,21 @@ import pickle
 import pandas as pd
 from models.conv_ae_3d import Conv3DAutoEncoder
 from torch.utils.data import DataLoader 
-from data.dataset import AF2OutputDataset
+from data.dataset3d import AF2OutputDataset
 
 
 # Set device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Hyperparameters
-batch_size = 1
+batch_size = 2
 num_epochs = 20
-learning_rate = 0.005
+learning_rate = 0.01
 
 # Load data
 dataset = AF2OutputDataset(
-    names_file = "names3d.csv",
-    root_dir = "/home/hgao53/alphafold_new/alphafold/final_bsu/",
+    names_file = "bsu_names.csv",
+    root_dir = "/home/hgao53/padded_bsu",
     transform = transforms.ToTensor(),
 )
 
