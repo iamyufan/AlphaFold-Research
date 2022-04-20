@@ -23,8 +23,8 @@ learning_rate = 0.01
 
 # Load data
 dataset = AF2OutputDataset(
-    names_file = "bsu_names.csv",
-    root_dir = "/home/hgao53/padded_bsu",
+    names_file = "n.csv",
+    root_dir = "/scratch/hgao53/padded_bsu",
     transform = transforms.ToTensor(),
 )
 
