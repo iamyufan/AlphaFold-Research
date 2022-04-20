@@ -18,7 +18,7 @@ from data.dataset3d import AF2OutputDataset
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Hyperparameters
-batch_size = 2
+batch_size = 1
 num_epochs = 20
 learning_rate = 0.01
 
