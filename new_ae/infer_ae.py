@@ -16,7 +16,7 @@ def get_files(directory):
     return [os.path.join(directory, f) for f in sorted(list(os.listdir(directory)))
             if os.path.isfile(os.path.join(directory, f))]
 
-def main(args):
+def main():
     # Set device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -43,12 +43,12 @@ def main(args):
     # dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True)
 
     # Model
-    if args.model == 'conv_ae_3d':
-        model = Conv3DAutoEncoder(in_channel=1).to('cpu')
-    elif args.model == 'conv_ae_2d':
-        model = Conv2DAutoEncoder(in_channel=1).to('cpu')
+    # if args.model == 'conv_ae_3d':
+    model = Conv3DAutoEncoder(in_channel=1).to('cpu')
+    # elif args.model == 'conv_ae_2d':
+    #     model = Conv2DAutoEncoder(in_channel=1).to('cpu')
         
-    PATH = args.path
+    PATH = 'conv_ae_3d_1.pth'
     model.load_state_dict(PATH).double()
 
     # Loss and optimizer
@@ -57,7 +57,7 @@ def main(args):
 
     # print(len(dataset))
     
-    root_dir = args.root_dir
+    root_dir = "/scratch/hgao53/padded_bsu"
     SAVE_DIR = '/scratch/hgao53/encoded_bsu/'
     
     file_names = get_files(root_dir)
@@ -125,21 +125,21 @@ def main(args):
 
 
 if __name__ == '__main__':
-    import argparse
+    # import argparse
 
-    parser = argparse.ArgumentParser(description = 'AutoEncoder')
-    # Dataset
-    parser.add_argument('-d', '--dataset', type=str, default='3d', help='Dataset')
-    parser.add_argument('-dir', '--root-dir', type=str, default='"/scratch/hgao53/padded_bsu"',
-                        help='Dir for tensor-like data')
-    parser.add_argument('-m', '--model', type=str, default='conv_ae_3d',)
+    # parser = argparse.ArgumentParser(description = 'AutoEncoder')
+    # # Dataset
+    # parser.add_argument('-d', '--dataset', type=str, default='3d', help='Dataset')
+    # parser.add_argument('-dir', '--root-dir', type=str, default="/scratch/hgao53/padded_bsu",
+    #                     help='Dir for tensor-like data')
+    # parser.add_argument('-m', '--model', type=str, default='conv_ae_3d',)
     
-    # Training hyper-parameters
-    parser.add_argument('-e', '--num-epochs', type=int, default=20, help='Number of epochs')
-    parser.add_argument('-b', '--batch-size', type=int, default=1, help='Batch size')
-    parser.add_argument('-lr', '--learning-rate', type=float, default=0.01, help='Learning rate')
-    parser.add_argument('-p', '--path', type=str, default='conv_ae_3d_1.pth')
+    # # Training hyper-parameters
+    # parser.add_argument('-e', '--num-epochs', type=int, default=20, help='Number of epochs')
+    # parser.add_argument('-b', '--batch-size', type=int, default=1, help='Batch size')
+    # parser.add_argument('-lr', '--learning-rate', type=float, default=0.01, help='Learning rate')
+    # parser.add_argument('-p', '--path', type=str, default='conv_ae_3d_1.pth')
     
-    args = parser.parse_args().__dict__
-    print(args)
-    main(args)
+    # args = parser.parse_args().__dict__
+    # print(args)
+    main()
