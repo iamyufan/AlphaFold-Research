@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#SBATCH --job-name=infer_bsu
+#SBATCH --output=infer_bsu.%j.out
+#SBATCH --error=infer_bsu.%j.err
+#SBATCH -t 0-24:00:00
+#SBATCH --cpus-per-task=20
+#SBATCH --mem=100G
+
+source /home/hgao53/miniconda3/bin/activate /home/hgao53/miniconda3/envs/af2_test
+
+python3 infer_bsu.py
