@@ -26,7 +26,9 @@ def main():
     # model = model.double()
     
     root_dir = "/scratch/hgao53/padded_bsu"
-    SAVE_DIR = '/scratch/hgao53/encoded_bsu'
+    # SAVE_DIR = '/scratch/hgao53/encoded_bsu'
+    
+    output = dict()
     
     file_names = get_files(root_dir)
     for i, item in enumerate(file_names):
@@ -48,12 +50,16 @@ def main():
         encoded, _ = model(data)
         encoded = encoded.squeeze(0).squeeze(0).squeeze(2).reshape(-1).detach().numpy()
         
-        SAVE_PATH = SAVE_DIR + item + 'npy'
-        save(SAVE_PATH, encoded)
+        output[item] = encoded
+        # SAVE_PATH = SAVE_DIR + item + 'npy'
+        # save(SAVE_PATH, encoded)
         
         # Log
-        print('Completed {}/{}, saved to {}'.format(i+1, len(file_names), SAVE_PATH))
-        
+        print('Completed {}/{}'.format(i+1, len(file_names)))
+    
+    with open('bsu_output.pkl', 'wb') as f:
+        pickle.dump(output, f)
+    print('Completed')
 
 
 if __name__ == '__main__':
