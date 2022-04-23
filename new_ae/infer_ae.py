@@ -22,7 +22,8 @@ def main():
     
     model = Conv3DAutoEncoder(in_channel=1).to('cpu')
     PATH = 'conv_ae_3d_1.pth'
-    model.load_state_dict(torch.load(PATH)).double()
+    model.load_state_dict(torch.load(PATH))
+    model = model.double()
     
     root_dir = "/scratch/hgao53/padded_bsu"
     SAVE_DIR = '/scratch/hgao53/encoded_bsu/'
