@@ -25,7 +25,7 @@ def main():
     model.load_state_dict(torch.load(PATH))
     # model = model.double()
     
-    dataset = 'imm904'
+    dataset = 'iml1515'
     if dataset == 'iqo884':                                             # BSU
         root_dir = "/scratch/hgao53/padded_bsu"
     elif dataset == 'imm904':                                           # YAL
