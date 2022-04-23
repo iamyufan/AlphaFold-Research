@@ -26,7 +26,7 @@ def main():
     # model = model.double()
     
     root_dir = "/scratch/hgao53/padded_bsu"
-    SAVE_DIR = '/scratch/hgao53/encoded_bsu/'
+    SAVE_DIR = '/scratch/hgao53/encoded_bsu'
     
     file_names = get_files(root_dir)
     for i, item in enumerate(file_names):
