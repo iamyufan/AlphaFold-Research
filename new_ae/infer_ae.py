@@ -25,7 +25,13 @@ def main():
     model.load_state_dict(torch.load(PATH))
     # model = model.double()
     
-    root_dir = "/scratch/hgao53/padded_bsu"
+    dataset = 'imm904'
+    if dataset == 'iqo884':                                             # BSU
+        root_dir = "/scratch/hgao53/padded_bsu"
+    elif dataset == 'imm904':                                           # YAL
+        root_dir = '/home/hgao53/alphafold_new/alphafold/final'
+    elif dataset == 'iml1515':                                          # b
+        root_dir = '/home/hgao53/alphafold_new/alphafold/final_904'
     # SAVE_DIR = '/scratch/hgao53/encoded_bsu'
     
     output = dict()
@@ -35,6 +41,11 @@ def main():
         print('Processing %i of %i (%s)' % (i+1, len(file_names), item))
         with open(item, 'rb') as f:
             data = pickle.load(f)
+            
+        if dataset != 'iqo884':
+            data = data['representations']['pair']
+            data = np.pad(data, ((0, 2048-data.shape[0]), (0, 2048-data.shape[0]), (0, 0)), 'constant')
+        
         transform = torch.from_numpy
         data = transform(data)
         
@@ -57,7 +68,7 @@ def main():
         # Log
         print('Completed {}/{}'.format(i+1, len(file_names)))
     
-    with open('bsu_output.pkl', 'wb') as f:
+    with open('{}_output.pkl'.format(dataset), 'wb') as f:
         pickle.dump(output, f)
     print('Completed')
 

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#SBATCH --job-name=imm904_infer
+#SBATCH --output=imm904_infer.%j.out
+#SBATCH --error=imm904_infer.%j.err
+#SBATCH -t 0-24:00:00
+#SBATCH --cpus-per-task=20
+#SBATCH --mem=100G
+
+source /home/hgao53/miniconda3/bin/activate /home/hgao53/miniconda3/envs/af2_test
+
+python3 infer_ae.py
