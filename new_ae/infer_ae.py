@@ -1,14 +1,14 @@
 from numpy import True_
 import numpy as np
-from numpy import save
-import time
+# from numpy import save
+# import time
 import torch
-import torch.nn as nn
-import torch.optim as optim
-from models.conv_ae_2d import Conv2DAutoEncoder
+# import torch.nn as nn
+# import torch.optim as optim
+# from models.conv_ae_2d import Conv2DAutoEncoder
 from models.conv_ae_3d import Conv3DAutoEncoder
-from torch.utils.data import DataLoader 
-from dataset import Dataset2D, Dataset3D
+# from torch.utils.data import DataLoader 
+# from dataset import Dataset2D, Dataset3D
 import os
 import pickle
 
@@ -20,11 +20,13 @@ def main():
     # Set device
     # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
+    # Load model
     model = Conv3DAutoEncoder(in_channel=1).to('cpu')
     PATH = 'conv_ae_3d_1.pth'
     model.load_state_dict(torch.load(PATH))
     # model = model.double()
     
+    # Set data path
     dataset = 'iml1515'
     if dataset == 'iqo884':                                             # BSU
         root_dir = "/scratch/hgao53/padded_bsu"
@@ -34,14 +36,16 @@ def main():
         root_dir = '/home/hgao53/alphafold_new/alphafold/final_904'
     # SAVE_DIR = '/scratch/hgao53/encoded_bsu'
     
+    # Infer
     output = dict()
-    
     file_names = get_files(root_dir)
     for i, item in enumerate(file_names):
         print('Processing %i of %i (%s)' % (i+1, len(file_names), item))
+        
+        # Load data
         with open(item, 'rb') as f:
             data = pickle.load(f)
-            
+        ## Padding
         if dataset != 'iqo884':
             data = data['representations']['pair']
             data = np.pad(data, ((0, 2048-data.shape[0]), (0, 2048-data.shape[0]), (0, 0)), 'constant')
@@ -49,7 +53,7 @@ def main():
         transform = torch.from_numpy
         data = transform(data)
         
-        # Add channel dimension
+        ## Add channel dimension
         data = data.unsqueeze(3)
         data = data.permute(3, 0, 1, 2)
         
@@ -57,7 +61,7 @@ def main():
         data = data.permute(4, 0, 1, 2, 3)
         data.to('cpu')#.double()
         
-        # Infer
+        ## Infer
         encoded, _ = model(data)
         encoded = encoded.squeeze(0).squeeze(0).squeeze(2).reshape(-1).detach().numpy()
         
@@ -70,7 +74,7 @@ def main():
     
     with open('{}_output.pkl'.format(dataset), 'wb') as f:
         pickle.dump(output, f)
-    print('Completed')
+    print('> All Completed!')
 
 
 if __name__ == '__main__':

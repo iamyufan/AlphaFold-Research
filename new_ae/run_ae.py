@@ -97,6 +97,6 @@ if __name__ == '__main__':
     parser.add_argument('-b', '--batch-size', type=int, default=1, help='Batch size')
     parser.add_argument('-lr', '--learning-rate', type=float, default=0.01, help='Learning rate')
     
-    args = parser.parse_args().__dict__
+    args = parser.parse_args()
     print(args)
     main(args)
