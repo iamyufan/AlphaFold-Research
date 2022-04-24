@@ -41,6 +41,9 @@ def main(args):
     elif args.model == 'conv_ae_2d':
         model = Conv2DAutoEncoder(in_channel=1).to(device)
 
+    PATH = 'conv_ae_3d_1.pth'
+    model.load_state_dict(torch.load(PATH))
+    
     # Loss and optimizer
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
@@ -78,8 +81,8 @@ def main(args):
                 .format(epoch, num_epochs, i, batch_time_end-batch_time_start, total_loss))
         
         epoch_time_end=time.time()
-        print('=== epoch [{}/{}] -- time:{}\n'.format(epoch, num_epochs, epoch_time_end-epoch_time_start))
-        torch.save(model.state_dict(), './conv_ae_3d_{0}.pth'.format(epoch))
+        print('=== epoch [{}/{}] -- time:{}\n'.format(epoch+2, num_epochs+2, epoch_time_end-epoch_time_start))
+        torch.save(model.state_dict(), './conv_ae_3d_{0}.pth'.format(epoch+2))
 
 
 if __name__ == '__main__':

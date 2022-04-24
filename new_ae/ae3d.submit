@@ -3,13 +3,13 @@
 #SBATCH --job-name=ae3d
 #SBATCH --output=new_ae3d.%j.out
 #SBATCH --error=new_ae3d.%j.err
-#SBATCH -t 0-96:00:00
+#SBATCH -t 0-168:00:00
 #SBATCH -p gpu
 #SBATCH -q wildfire
 #SBATCH --gres=gpu:2
 #SBATCH -C V100 
 #SBATCH --cpus-per-task=20
-#SBATCH --mem=100G
+#SBATCH --mem=128G
 
 source /home/hgao53/miniconda3/bin/activate /home/hgao53/miniconda3/envs/af2_test
 
