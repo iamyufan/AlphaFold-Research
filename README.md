@@ -1,6 +1,6 @@
 # AlphaFold-Research
 
-Repo for DKU AlphaFold Research Project
+Using AlphaFold and GNN to Predict Catalytic Efficiency of Enzymes
 
 ## Basic Idea
 
