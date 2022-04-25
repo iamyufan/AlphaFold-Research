@@ -91,7 +91,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description = 'AutoEncoder')
     # Dataset
     parser.add_argument('-d', '--dataset', type=str, default='3d', help='Dataset')
-    parser.add_argument('-dir', '--root-dir', type=str, default='"/scratch/hgao53/padded_bsu"',
+    parser.add_argument('-dir', '--root-dir', type=str, default='/scratch/hgao53/padded_bsu',
                         help='Dir for tensor-like data')
     parser.add_argument('-m', '--model', type=str, default='conv_ae_3d',)
     
