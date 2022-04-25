@@ -25,8 +25,8 @@ class data_loader:
         self.path = path
         self.nodes = self.load_nodes()
         self.links = self.load_links()
-        self.labels_train = self.load_labels('label.pkl')
-        self.labels_test = self.load_labels('label_test.pkl')
+        self.labels_train = self.load_labels('label.dat')
+        self.labels_test = self.load_labels('label.dat.test')
 
     def get_sub_graph(self, node_types_tokeep):
         """
@@ -175,17 +175,13 @@ class data_loader:
                 f.write(f"{nid}\t\t{self.get_node_type(nid)}\t{l}\n")
 
     def evaluate(self, pred):
-        # print(f"{bcolors.WARNING}Warning: If you want to obtain test score, please submit online on biendata.{bcolors.ENDC}")
+        print(f"{bcolors.WARNING}Warning: If you want to obtain test score, please submit online on biendata.{bcolors.ENDC}")
         y_true = self.labels_test['data'][self.labels_test['mask']]
-        # micro = f1_score(y_true, pred, average='micro')
-        # macro = f1_score(y_true, pred, average='macro')
-        mape = mean_absolute_percentage_error(y_true, pred)
-        # result = {
-        #     'micro-f1': micro,
-        #     'macro-f1': macro
-        # }
+        micro = f1_score(y_true, pred, average='micro')
+        macro = f1_score(y_true, pred, average='macro')
         result = {
-            'mape': mape
+            'micro-f1': micro,
+            'macro-f1': macro
         }
         return result
 
@@ -195,29 +191,24 @@ class data_loader:
             num_classes: total number of labels
             total: total number of labeled data
             count: number of labeled data for each node type
-            data: a numpy matrix with shape (self.nodes['total'], self.labels['num_classes'])
+            data: a numpy matrix with shape (self.nodes['total'], self.labels['num_labels'])
             mask: to indicate if that node is labeled, if False, that line of data is masked
         """
-        labels = {'num_classes':0, 'total':0, 'data':None, 'mask':None, 'dtype':None}
-        nc = 1
+        labels = {'num_labels':0, 'total':0, 'count':Counter(), 'data':None, 'mask':None}
+        nl = 2
         mask = np.zeros(self.nodes['total'], dtype=bool)
-        data = [None for i in range(self.nodes['total'])]
-
-        with open(os.path.join(self.path, name), 'rb') as f:
-            label_df = pickle.load(f)
-        new_data = np.zeros((self.nodes['total'], nc), dtype=float)
-        nc = 1
-        for i in range(label_df.shape[0]):
-            node_id, node_type, node_label = int(label_df.iloc[i, 0]), int(label_df.iloc[i, 1]), float(label_df.iloc[i, 2])
-            mask[node_id] = True
-            data[node_id] = node_label
-            dtype = type(node_label)
-            labels['total'] += 1
-            new_data[node_id, 0] = node_label
-        labels['num_classes'] = nc
-        labels['data'] = new_data
+        data = [[0.0, 0.0] for i in range(self.nodes['total'])]
+        with open(os.path.join(self.path, name), 'r', encoding='utf-8') as f:
+            for line in f:
+                th = line.split('\t')
+                node_id, node_type, node_label = int(th[0]), int(th[1]), list(map(float, th[2].split(',')))
+                mask[node_id] = True
+                data[node_id] = node_label
+                labels['count'][node_type] += 1
+                labels['total'] += 1
+        labels['num_labels'] = nl
+        labels['data'] = data
         labels['mask'] = mask
-        labels['dtype'] = dtype
         return labels
 
     def get_node_type(self, node_id):
@@ -282,19 +273,27 @@ class data_loader:
                         [ shift[node_type], shift[node_type]+count[node_type] )
         """
         nodes = {'total':0, 'count':Counter(), 'attr':{}, 'shift':{}}
-        nodes = {'total':0, 'count':Counter(), 'attr':{}, 'shift':{}}
-        with open(os.path.join(self.path, 'node.pkl'), 'rb') as f:
-            node = pickle.load(f)
-        for i in range(node.shape[0]):
-            # Then this line of node has attribute
-            node_id, node_type, node_attr = node.iloc[i, 0], node.iloc[i, 1], node.iloc[i, 2:]
-            node_id = int(node_id)
-            node_type = int(node_type)
-            node_attr = list(node_attr)
-            nodes['count'][node_type] += 1
-            nodes['attr'][node_id] = node_attr
-            nodes['total'] += 1
-            
+        with open(os.path.join(self.path, 'node.dat'), 'r', encoding='utf-8') as f:
+            for line in f:
+                th = line.split('\t')
+                if len(th) == 4:
+                    # Then this line of node has attribute
+                    node_id, node_name, node_type, node_attr = th
+                    node_id = int(node_id)
+                    node_type = int(node_type)
+                    node_attr = list(map(float, node_attr.split(',')))
+                    nodes['count'][node_type] += 1
+                    nodes['attr'][node_id] = node_attr
+                    nodes['total'] += 1
+                elif len(th) == 3:
+                    # Then this line of node doesn't have attribute
+                    node_id, node_name, node_type = th
+                    node_id = int(node_id)
+                    node_type = int(node_type)
+                    nodes['count'][node_type] += 1
+                    nodes['total'] += 1
+                else:
+                    raise Exception("Too few information to parse!")
         shift = 0
         attr = {}
         for i in range(len(nodes['count'])):
@@ -308,5 +307,4 @@ class data_loader:
                 attr[i] = None
             shift += nodes['count'][i]
         nodes['attr'] = attr
-        nodes
         return nodes
