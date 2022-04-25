@@ -1,14 +1,7 @@
 from numpy import True_
 import numpy as np
-# from numpy import save
-# import time
 import torch
-# import torch.nn as nn
-# import torch.optim as optim
-# from models.conv_ae_2d import Conv2DAutoEncoder
 from models.conv_ae_3d import Conv3DAutoEncoder
-# from torch.utils.data import DataLoader 
-# from dataset import Dataset2D, Dataset3D
 import os
 import pickle
 
