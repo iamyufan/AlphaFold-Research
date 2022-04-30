@@ -188,7 +188,7 @@ class data_loader:
     def load_labels(self, name):
         """
         return labels dict
-            num_classes: total number of labels
+            num_labels: total number of labels
             total: total number of labeled data
             count: number of labeled data for each node type
             data: a numpy matrix with shape (self.nodes['total'], self.labels['num_labels'])
