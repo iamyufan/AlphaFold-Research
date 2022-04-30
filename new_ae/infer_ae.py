@@ -39,7 +39,7 @@ def main(args):
         with open(item, 'rb') as f:
             data = pickle.load(f)
         ## Padding
-        if dataset != 'iqo884':
+        if dataset != 'iyo884':
             data = data['representations']['pair']
             data = np.pad(data, ((0, 2048-data.shape[0]), (0, 2048-data.shape[0]), (0, 0)), 'constant')
         
