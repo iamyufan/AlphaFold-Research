@@ -9,19 +9,19 @@ def get_files(directory):
     return [os.path.join(directory, f) for f in sorted(list(os.listdir(directory)))
             if os.path.isfile(os.path.join(directory, f))]
 
-def main():
+def main(args):
     # Set device
     # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     # Load model
     model = Conv3DAutoEncoder(in_channel=1).to('cpu')
-    PATH = 'conv_ae_3d_1.pth'
+    PATH = 'conv_ae_3d_3.pth'
     model.load_state_dict(torch.load(PATH))
     # model = model.double()
     
     # Set data path
-    dataset = 'iml1515'
-    if dataset == 'iqo884':                                             # BSU
+    dataset = args.dataset
+    if dataset == 'iyo884':                                             # BSU
         root_dir = "/scratch/hgao53/padded_bsu"
     elif dataset == 'imm904':                                           # YAL
         root_dir = '/home/hgao53/alphafold_new/alphafold/final'
@@ -71,4 +71,12 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    import argparse
+
+    parser = argparse.ArgumentParser(description = 'AutoEncoderInference')
+    # Dataset
+    parser.add_argument('-d', '--dataset', type=str, default='iqo884', help='Dataset')
+    
+    args = parser.parse_args()
+    print(args)
+    main(args)

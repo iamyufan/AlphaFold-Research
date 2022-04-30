@@ -9,4 +9,4 @@
 
 source /home/hgao53/miniconda3/bin/activate /home/hgao53/miniconda3/envs/af2_test
 
-python3 infer_ae.py
+python3 infer_ae.py -d iml1515
