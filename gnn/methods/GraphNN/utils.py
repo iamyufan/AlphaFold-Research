@@ -1,4 +1,5 @@
 import numpy as np
+sys.path.append('../../')
 import scipy.sparse as sp
 import torch
 import torch.nn.functional as F
