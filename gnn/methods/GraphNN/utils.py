@@ -1,13 +1,13 @@
 import numpy as np
 import sys
-sys.path.append('../../')
+# sys.path.append('../../')
 import scipy.sparse as sp
 import torch
 import torch.nn.functional as F
 
 def load_data(prefix='iYO844'):
     from scripts.data_loader import data_loader
-    dl = data_loader('data/{}'.format(prefix))
+    dl = data_loader('../../data/{}'.format(prefix))
     features = []
     for i in range(len(dl.nodes['count'])):
         th = dl.nodes['attr'][i]

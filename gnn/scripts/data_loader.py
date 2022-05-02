@@ -246,7 +246,7 @@ class data_loader:
             data: a dict of sparse matrices, each link type with one matrix. Shapes are all (nodes['total'], nodes['total'])
         """
         links = {'total':0, 'count':Counter(), 'meta':{}, 'data':defaultdict(list)}
-        with open(os.path.join(self.path, 'link.pkl'), 'rb') as f:
+        with open(os.path.join(self.path, 'link.dat'), 'rb') as f:
             link = pickle.load(f)
         for i in range(link.shape[0]):
             h_id, t_id, r_id, link_weight = int(link.iloc[i, 0]), int(link.iloc[i, 1]), int(link.iloc[i, 2]), link.iloc[i, 3]
