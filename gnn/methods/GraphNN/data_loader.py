@@ -3,34 +3,6 @@ import numpy as np
 import scipy.sparse as sp
 from collections import Counter, defaultdict
 from sklearn.metrics import f1_score
-from sklearn.metrics import mean_absolute_percentage_error
-import time
-import pickle
-
-
-# class bcolors:
-#     HEADER = '\033[95m'
-#     OKBLUE = '\033[94m'
-#     OKCYAN = '\033[96m'
-#     OKGREEN = '\033[92m'
-#     WARNING = '\033[93m'
-#     FAIL = '\033[91m'
-#     ENDC = '\033[0m'
-#     BOLD = '\033[1m'
-#     UNDERLINE = '\033[4m'
-
-
-# class bcolors:
-#     HEADER = '\033[95m'
-#     OKBLUE = '\033[94m'
-#     OKCYAN = '\033[96m'
-#     OKGREEN = '\033[92m'
-#     WARNING = '\033[93m'
-#     FAIL = '\033[91m'
-#     ENDC = '\033[0m'
-#     BOLD = '\033[1m'
-#     UNDERLINE = '\033[4m'
-
 
 class data_loader:
     def __init__(self, path):
@@ -219,7 +191,7 @@ class data_loader:
                 labels['count'][node_type] += 1
                 labels['total'] += 1
         labels['num_labels'] = nl
-        labels['data'] = data
+        labels['data'] = np.array(data)
         labels['mask'] = mask
         return labels
 
@@ -243,6 +215,12 @@ class data_loader:
     def get_edge_info(self, edge_id):
         return self.links['meta'][edge_id]
     
+    def list_to_sp_mat(self, li):
+        data = [x[2] for x in li]
+        i = [x[0] for x in li]
+        j = [x[1] for x in li]
+        return sp.coo_matrix((data, (i,j)), shape=(self.nodes['total'], self.nodes['total'])).tocsr()
+    
     def load_links(self):
         """
         return links dict
@@ -251,7 +229,6 @@ class data_loader:
             meta: a dict of tuple, explaining the link type is from what type of node to what type of node
             data: a dict of sparse matrices, each link type with one matrix. Shapes are all (nodes['total'], nodes['total'])
         """
-        
         links = {'total':0, 'count':Counter(), 'meta':{}, 'data':defaultdict(list)}
         with open(os.path.join(self.path, 'link.dat'), 'r', encoding='utf-8') as f:
             for line in f:
@@ -265,16 +242,8 @@ class data_loader:
                 links['count'][r_id] += 1
                 links['total'] += 1
         new_data = {}
-        # print('==========================')
-        
-        def list_to_sp_mat(li):
-            data = [x[2] for x in li]
-            i = [x[0] for x in li]
-            j = [x[1] for x in li]
-            return sp.coo_matrix((data, (i,j)), shape=(self.nodes['total'], self.nodes['total'])).tocsr()
-        
         for r_id in links['data']:
-            new_data[r_id] = list_to_sp_mat(links['data'][r_id])
+            new_data[r_id] = self.list_to_sp_mat(links['data'][r_id])
         links['data'] = new_data
         return links
 
@@ -322,5 +291,4 @@ class data_loader:
                 attr[i] = None
             shift += nodes['count'][i]
         nodes['attr'] = attr
-        print('==========================')
         return nodes

@@ -34,11 +34,11 @@ def main(args):
     # Set model
     num_labels = dl.labels_train['num_labels']
     
-    ## GCN
+    ## GAT
     if args.model_type == 'gat':
         heads = [args.num_heads] * args.num_layers + [1]
         net = GAT(g, in_dims, args.hidden_dim, num_labels, args.num_layers, heads, F.elu, args.dropout, args.dropout, args.slope, False)
-    ## GAT
+    ## GCN
     elif args.model_type == 'gcn':
         net = GCN(g, in_dims, args.hidden_dim, num_labels, args.num_layers, F.elu, args.dropout)
         

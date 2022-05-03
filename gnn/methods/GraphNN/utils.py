@@ -1,12 +1,11 @@
 import numpy as np
 import sys
-# sys.path.append('../../')
 import scipy.sparse as sp
 import torch
 import torch.nn.functional as F
 
 def load_data(prefix='iYO844'):
-    from scripts.data_loader import data_loader
+    from data_loader import data_loader
     dl = data_loader('../../data/{}'.format(prefix))
     features = []
     for i in range(len(dl.nodes['count'])):
@@ -16,7 +15,7 @@ def load_data(prefix='iYO844'):
         else:
             features.append(th)
     adjM = sum(dl.links['data'].values())
-    labels = np.zeros((dl.nodes['count'][0], dl.labels_train['num_classes']), dtype=float)
+    labels = np.zeros((dl.nodes['count'][0], dl.labels_train['num_labels']), dtype=float)
     val_ratio = 0.2
     train_idx = np.nonzero(dl.labels_train['mask'])[0]
     np.random.shuffle(train_idx)
@@ -63,4 +62,4 @@ def mat2tensor(mat):
 
 # compute the regression loss
 def regression_loss(logits, labels):
-    return F.mse_loss(logits, torch.reshape(labels, logits.shape))
+    return F.mse_loss(logits, labels)
