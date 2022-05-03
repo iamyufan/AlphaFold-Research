@@ -86,7 +86,7 @@ def main(args):
         
 
     # Test model
-    net.load_state_dict(torch.load('checkpoint/checkpoint_{}_{}.pt'.format(args.dataset, args.model_type)))
+    net.load_state_dict(torch.load('checkpoint/checkpoint_{}_{}.pth'.format(args.dataset, args.model_type)))
     net.eval()
     test_logits = []
     with torch.no_grad():
