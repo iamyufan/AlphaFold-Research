@@ -41,9 +41,9 @@ def main(args):
     ## GCN
     elif args.model_type == 'gcn':
         net = GCN(g, in_dims, args.hidden_dim, num_labels, args.num_layers, F.elu, args.dropout)
-        
     ## HAN
     ## GTN
+    
     net.to(device)
     
     # Set loss and optimizer
@@ -80,6 +80,10 @@ def main(args):
         ## print validation info
         print('Epoch {:05d} | Val_Loss {:.4f} | Time(s) {:.4f}'.format(
             epoch, val_loss.item(), t_end - t_start))
+        print()
+        torch.save(net.state_dict(), './checkpoint_{}_{}.pth'.format(args.dataset, args.model_type))
+        
+        
 
     # Test model
     net.load_state_dict(torch.load('checkpoint/checkpoint_{}_{}.pt'.format(args.dataset, args.model_type)))
