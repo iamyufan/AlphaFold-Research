@@ -15,7 +15,7 @@ def main(args):
     
     # Load model
     model = Conv3DAutoEncoder(in_channel=1).to('cpu')
-    PATH = 'conv_ae_3d_3.pth'
+    PATH = 'checkpoint/conv_ae_3d_3.pth'
     model.load_state_dict(torch.load(PATH))
     # model = model.double()
     
