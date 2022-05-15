@@ -3,6 +3,7 @@ import numpy as np
 import scipy.sparse as sp
 from collections import Counter, defaultdict
 from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
 # import torch.nn.functional as F
 
 
@@ -174,8 +175,8 @@ class data_loader:
     def evaluate(self, pred):
         # print(f"{bcolors.WARNING}Warning: If you want to obtain test score, please submit online on biendata.{bcolors.ENDC}")
         y_true = self.labels_test['data'][self.labels_test['mask']]
-        km_mse = mean_squared_error(y_true.T[0], pred.T[0])
-        kcat_mse = mean_squared_error(y_true.T[1], pred.T[1])
+        km_mse = r2_score(y_true.T[0], pred.T[0])
+        kcat_mse = r2_score(y_true.T[1], pred.T[1])
         result = {
             'km_mse': km_mse,
             'kcat_mse': kcat_mse

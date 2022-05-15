@@ -24,7 +24,7 @@ class GCN(nn.Module):
             nn.init.xavier_normal_(fc.weight, gain=1.414)
             
         # input layer
-        self.layers.append(GraphConv(num_hidden, num_hidden, activation=activation, weight=False))
+        self.layers.append(GraphConv(num_hidden, num_hidden, activation=activation))
         
         # hidden layers
         for i in range(num_layers - 1):
