@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#SBATCH --job-name=pca
+#SBATCH --output=pca.%j.out
+#SBATCH --error=pca.%j.err
+#SBATCH -t 0-24:00:00
+#SBATCH --cpus-per-task=20
+#SBATCH --mem=64G
+
+source /home/hgao53/miniconda3/bin/activate /home/hgao53/miniconda3/envs/af2_test
+
+python3 pca.py
