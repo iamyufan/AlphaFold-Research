@@ -2,8 +2,9 @@ import sys
 import time
 import torch
 import torch.nn.functional as F
-from utils import load_data, mat2tensor, regression_loss
-from model import GCN, GAT
+from utils.utils import load_data, mat2tensor, regression_loss
+from model.gcn import GCN
+from model.gat import GAT
 import numpy as np
 import dgl
 
@@ -13,11 +14,10 @@ def main(args):
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
     # Load data
-    features_list, adjM, labels, train_val_test_idx, dl = load_data(
-        args.dataset)
+    features_list, adjM, labels, train_val_test_idx, dl = load_data(args.dataset)
     features_list = [mat2tensor(features).to(device)
                      for features in features_list]
-    in_dims = [features.shape[1] for features in features_list]
+    m_dim = features_list[1].shape[1]
 
     # Set train, val, test index
     labels = torch.FloatTensor(labels).to(device)
@@ -37,17 +37,17 @@ def main(args):
     # Set model
     num_labels = dl.labels_train['num_labels']
 
-    # GAT
+    ## GAT
     if args.model_type == 'gat':
         heads = [args.num_heads] * args.num_layers + [1]
-        net = GAT(g, in_dims, args.hidden_dim, num_labels, args.num_layers,
+        net = GAT(g, m_dim, args.hidden_dim, num_labels, args.num_layers,
                   heads, F.elu, args.dropout, args.dropout, args.slope, False)
-    # GCN
+    ## GCN
     elif args.model_type == 'gcn':
-        net = GCN(g, in_dims, args.hidden_dim, num_labels,
+        net = GCN(g, m_dim, args.hidden_dim, num_labels,
                   args.num_layers, F.elu, args.dropout)
-    # HAN
-    # GTN
+    ## HAN
+    ## GTN
 
     net.to(device)
 
@@ -121,13 +121,13 @@ if __name__ == '__main__':
                         help='Dimension of the node hidden state. Default is 64.')
     parser.add_argument('--num-heads', type=int, default=8,
                         help='Number of the attention heads. Default is 8.')
-    parser.add_argument('--epoch', type=int, default=300,
+    parser.add_argument('--epoch', type=int, default=100,
                         help='Number of epochs.')
     parser.add_argument('--lr', type=float, default=5e-4)
     parser.add_argument('--dropout', type=float, default=0.5)
     parser.add_argument('--weight-decay', type=float, default=1e-4)
 
     args = parser.parse_args()
-    
+
     print(args)
     main(args)

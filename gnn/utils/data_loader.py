@@ -1,9 +1,11 @@
+import pickle
 import os
 import numpy as np
 import scipy.sparse as sp
 from collections import Counter, defaultdict
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
+from sklearn.preprocessing import StandardScaler
 # import torch.nn.functional as F
 
 
@@ -275,38 +277,26 @@ class data_loader:
                         [ shift[node_type], shift[node_type]+count[node_type] )
         """
         nodes = {'total': 0, 'count': Counter(), 'attr': {}, 'shift': {}}
-        with open(os.path.join(self.path, 'node.dat'), 'r', encoding='utf-8') as f:
-            for line in f:
-                th = line.split('\t')
-                if len(th) == 4:
-                    # Then this line of node has attribute
-                    node_id, node_name, node_type, node_attr = th
-                    node_id = int(node_id)
-                    node_type = int(node_type)
-                    node_attr = list(map(float, node_attr.split(',')))
-                    nodes['count'][node_type] += 1
-                    nodes['attr'][node_id] = node_attr
-                    nodes['total'] += 1
-                elif len(th) == 3:
-                    # Then this line of node doesn't have attribute
-                    node_id, node_name, node_type = th
-                    node_id = int(node_id)
-                    node_type = int(node_type)
-                    nodes['count'][node_type] += 1
-                    nodes['total'] += 1
-                else:
-                    raise Exception("Too few information to parse!")
-        shift = 0
-        attr = {}
-        for i in range(len(nodes['count'])):
-            nodes['shift'][i] = shift
-            if shift in nodes['attr']:
-                mat = []
-                for j in range(shift, shift+nodes['count'][i]):
-                    mat.append(nodes['attr'][j])
-                attr[i] = np.array(mat)
-            else:
-                attr[i] = None
-            shift += nodes['count'][i]
-        nodes['attr'] = attr
+        
+        # load node.pkl
+        data = pickle.load(open(os.path.join(self.path, 'node.pkl'), 'rb'))
+        nodes['total'] = data.shape[0]
+        nodes['count'] = Counter(data['node_type_id'])
+        
+        e_data = data[data['node_type_id'] == 0]
+        m_data = data[data['node_type_id'] == 1]
+        
+        # attr of enzyme
+        # e_data['single'] = e_data['node_feature'].apply(lambda x: x['single'])
+        e_attr_logits = np.stack(e_data['node_feature'].apply(lambda x: x['logits']))
+        
+        # attr of molecule
+        m_attr = np.stack(m_data['node_feature'])
+        scaler = StandardScaler()
+        scaler.fit(m_attr)
+        m_attr = scaler.transform(m_attr)
+        
+        nodes['attr'] = {0:e_attr_logits, 1:m_attr}
+        nodes['shift'] = {0:0, 1:len(e_data)}
+
         return nodes

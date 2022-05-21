@@ -1,12 +1,15 @@
+import imp
 import numpy as np
 import sys
 import scipy.sparse as sp
 import torch
 import torch.nn.functional as F
+from utils.data_loader import data_loader
+# from data_loader import data_loader
+
 
 def load_data(prefix='iYO844'):
-    from data_loader import data_loader
-    dl = data_loader('../data/{}'.format(prefix))
+    dl = data_loader('./data/{}'.format(prefix))
     features = []
     for i in range(len(dl.nodes['count'])):
         th = dl.nodes['attr'][i]
@@ -15,7 +18,8 @@ def load_data(prefix='iYO844'):
         else:
             features.append(th)
     adjM = sum(dl.links['data'].values())
-    labels = np.zeros((dl.nodes['count'][0], dl.labels_train['num_labels']), dtype=float)
+    labels = np.zeros(
+        (dl.nodes['count'][0], dl.labels_train['num_labels']), dtype=float)
     val_ratio = 0.2
     train_idx = np.nonzero(dl.labels_train['mask'])[0]
     np.random.shuffle(train_idx)
@@ -34,12 +38,12 @@ def load_data(prefix='iYO844'):
     train_val_test_idx['train_idx'] = train_idx
     train_val_test_idx['val_idx'] = val_idx
     train_val_test_idx['test_idx'] = test_idx
-    
+
     return features,\
-           adjM, \
-           labels,\
-           train_val_test_idx,\
-            dl
+        adjM, \
+        labels,\
+        train_val_test_idx,\
+        dl
 
 
 def sp_to_spt(mat):
