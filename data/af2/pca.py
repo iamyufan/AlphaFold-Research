@@ -5,8 +5,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 import os
 
-AF2_OUTPUT_DIR = './'  # '/home/hgao53/alphafold_new/alphafold/final_bsu/'
-SAVE_DIR = './'  # '/scratch/hgao53/bsu_pca/'
+AF2_OUTPUT_DIR = '/home/hgao53/alphafold_new/alphafold/final_bsu/'
+SAVE_DIR = '/scratch/hgao53/bsu_pca/'
 
 
 def pca_main(data):
