@@ -6,7 +6,7 @@ from sklearn.decomposition import PCA
 import os
 
 AF2_OUTPUT_DIR = '/home/hgao53/alphafold_new/alphafold/final_bsu/'
-SAVE_DIR = '/scratch/hgao53/pca/'
+SAVE_DIR = '/scratch/hgao53/'
 
 
 def pca_main(data):
