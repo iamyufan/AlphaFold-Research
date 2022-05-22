@@ -33,7 +33,7 @@ class GCN(nn.Module):
                  g,
                  m_dim,
                  num_hidden,
-                 num_classes,
+                 num_labels,
                  num_layers,
                  activation,
                  dropout):
@@ -56,7 +56,7 @@ class GCN(nn.Module):
         self.e_conv = nn.Sequential(*e_layers)
 
         # fc layers: to make the features of all the nodes become the same dimension  
-        in_dims = [625, m_dim]
+        in_dims = [25*25, m_dim]
               
         self.fc_list = nn.ModuleList(
             [nn.Linear(in_dim, num_hidden, bias=True) for in_dim in in_dims])
@@ -73,13 +73,15 @@ class GCN(nn.Module):
                 GraphConv(num_hidden, num_hidden, activation=activation))
 
         # output layer
-        self.layers.append(GraphConv(num_hidden, num_classes))
+        self.layers.append(GraphConv(num_hidden, num_labels))
         self.dropout = nn.Dropout(p=dropout)
+
 
     def forward(self, features_list):
         h = []
         
         e_feature = features_list[0].unsqueeze(1)
+        e_feature = self.dropout(e_feature)
         e_feature = self.e_conv(e_feature).reshape((-1, 625))
         
         m_feature = features_list[1]

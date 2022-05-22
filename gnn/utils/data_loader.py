@@ -180,8 +180,8 @@ class data_loader:
         km_mse = r2_score(y_true.T[0], pred.T[0])
         kcat_mse = r2_score(y_true.T[1], pred.T[1])
         result = {
-            'km_mse': km_mse,
-            'kcat_mse': kcat_mse
+            'km_r2': km_mse,
+            'kcat_r2': kcat_mse
         }
         return result
 
@@ -196,21 +196,39 @@ class data_loader:
         """
         labels = {'num_labels': 0, 'total': 0,
                   'count': Counter(), 'data': None, 'mask': None}
-        nl = 2
-        mask = np.zeros(self.nodes['total'], dtype=bool)
-        data = [[0.0, 0.0] for i in range(self.nodes['total'])]
-        with open(os.path.join(self.path, name), 'r', encoding='utf-8') as f:
-            for line in f:
-                th = line.split('\t')
-                node_id, node_type, node_label = int(th[0]), int(
-                    th[1]), list(map(float, th[2].split(',')))
-                mask[node_id] = True
-                data[node_id] = node_label
-                labels['count'][node_type] += 1
-                labels['total'] += 1
-        labels['num_labels'] = nl
-        labels['data'] = np.array(data)
-        labels['mask'] = mask
+        nl = 1
+        
+        if nl == 1:
+            mask = np.zeros(self.nodes['total'], dtype=bool)
+            data = [0.0 for i in range(self.nodes['total'])]
+            with open(os.path.join(self.path, name), 'r', encoding='utf-8') as f:
+                for line in f:
+                    th = line.split('\t')
+                    node_id, node_type, node_label = int(th[0]), int(th[1]), float(th[2])
+                    mask[node_id] = True
+                    data[node_id] = node_label
+                    labels['count'][node_type] += 1
+                    labels['total'] += 1
+            labels['num_labels'] = nl
+            labels['data'] = np.array(data)
+            labels['mask'] = mask
+        
+        elif nl == 2:
+            mask = np.zeros(self.nodes['total'], dtype=bool)
+            data = [[0.0, 0.0] for i in range(self.nodes['total'])]
+            with open(os.path.join(self.path, name), 'r', encoding='utf-8') as f:
+                for line in f:
+                    th = line.split('\t')
+                    node_id, node_type, node_label = int(th[0]), int(
+                        th[1]), list(map(float, th[2].split(',')))
+                    mask[node_id] = True
+                    data[node_id] = node_label
+                    labels['count'][node_type] += 1
+                    labels['total'] += 1
+            labels['num_labels'] = nl
+            labels['data'] = np.array(data)
+            labels['mask'] = mask
+            
         return labels
 
     def get_node_type(self, node_id):

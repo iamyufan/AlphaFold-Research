@@ -27,10 +27,10 @@ def pca_main(data):
     scaler.fit(logits_reshaped)
     logits_standard = scaler.transform(logits_reshaped)
     # PCA with n_components=1
-    pca_1 = PCA(n_components=1)
-    pca_1.fit(logits_standard)
-    logits_PCA_1 = pca_1.transform(logits_standard)
-    logits_after_PCA = logits_PCA_1.reshape(enzyme_len, enzyme_len)
+    pca_2 = PCA(n_components=2)
+    pca_2.fit(logits_standard)
+    logits_PCA_2 = pca_2.transform(logits_standard)
+    logits_after_PCA = logits_PCA_2.reshape(enzyme_len, enzyme_len)
 
     # single representation
     # standardize

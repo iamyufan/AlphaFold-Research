@@ -50,6 +50,8 @@ def main(args):
     ## GTN
 
     net.to(device)
+    
+    print(net)
 
     # Set loss and optimizer
     optimizer = torch.optim.Adam(
@@ -88,11 +90,11 @@ def main(args):
             epoch, val_loss.item(), t_end - t_start))
         print()
         torch.save(net.state_dict(),
-                   'checkpoint/checkpoint_{}_{}.pth'.format(args.dataset, args.model_type))
+                   'checkpoint/checkpoint_{}_{}_{}.pth'.format(args.dataset, args.model_type, epoch))
 
     # Test model
     net.load_state_dict(torch.load(
-        'checkpoint/checkpoint_{}_{}.pth'.format(args.dataset, args.model_type)))
+        'checkpoint/checkpoint_{}_{}_{}.pth'.format(args.dataset, args.model_type, args.epoch-1)))
     net.eval()
     test_logits = []
     with torch.no_grad():
@@ -121,7 +123,7 @@ if __name__ == '__main__':
                         help='Dimension of the node hidden state. Default is 64.')
     parser.add_argument('--num-heads', type=int, default=8,
                         help='Number of the attention heads. Default is 8.')
-    parser.add_argument('--epoch', type=int, default=100,
+    parser.add_argument('--epoch', type=int, default=10,
                         help='Number of epochs.')
     parser.add_argument('--lr', type=float, default=5e-4)
     parser.add_argument('--dropout', type=float, default=0.5)
