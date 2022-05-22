@@ -46,7 +46,7 @@ def pca_main(data):
     # result
     result = dict()
     padded_logits = np.pad(logits_after_PCA, ((0, 1600-logits_after_PCA.shape[0]), (0, 1600-logits_after_PCA.shape[0]), (0, 0)), 'constant')
-    padded_single = np.np.pad(single_after_PCA, ((0, 1600-single_after_PCA.shape[0])), 'constant')
+    padded_single = np.pad(single_after_PCA, ((0, 1600-single_after_PCA.shape[0])), 'constant')
     
     result['logits'] = padded_logits
     result['single'] = padded_single
