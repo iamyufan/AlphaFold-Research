@@ -2,7 +2,9 @@ import sys
 import time
 import torch
 import torch.nn.functional as F
-from utils.utils import load_data, mat2tensor, regression_loss
+import torch.nn as nn
+from zmq import device
+from utils.utils import load_data, mat2tensor, regression_loss, EarlyStopping
 from model.gcn import GCN
 from model.gat import GAT
 import numpy as np
@@ -11,7 +13,8 @@ import dgl
 
 def main(args):
     # Set device
-    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    # device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cpu')
 
     # Load data
     features_list, adjM, labels, train_val_test_idx, dl = load_data(args.dataset)
@@ -43,6 +46,8 @@ def main(args):
     g = dgl.add_self_loop(g)
     g = g.to(device)
 
+    print('> Graph built')
+
     # Set model
     num_labels = dl.labels_train['num_labels']
 
@@ -55,18 +60,22 @@ def main(args):
     elif args.model_type == 'gcn':
         net = GCN(g, m_dim, args.hidden_dim, num_labels,
                   args.num_layers, F.elu, args.dropout)
-    ## HAN
-    ## GTN
 
     net.to(device)
     
     print(net)
 
     # Set loss and optimizer
+    criterion = nn.MSELoss()
+
     optimizer = torch.optim.Adam(
         net.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
+    patience = 5
+    early_stopping = EarlyStopping(patience, verbose=True)
+
     # Train model
+    last_epoch = 0
     for epoch in range(args.epoch):
         net.train()
         t_start = time.time()
@@ -74,7 +83,7 @@ def main(args):
         net.train()
         logits = net(features_list)
 
-        train_loss = regression_loss(logits[train_idx], labels[train_idx])
+        train_loss = criterion(logits[train_idx], labels[train_idx])
 
         # ==================backward=================
         optimizer.zero_grad()
@@ -100,15 +109,20 @@ def main(args):
         print()
         torch.save(net.state_dict(),
                    'checkpoint/checkpoint_{}_{}_{}.pth'.format(args.dataset, args.model_type, epoch))
+        early_stopping(val_loss, net)
+        if early_stopping.early_stop:
+            print("> Early stopping!")
+            last_epoch = epoch
+            break
 
     # Test model
     net.load_state_dict(torch.load(
-        'checkpoint/checkpoint_{}_{}_{}.pth'.format(args.dataset, args.model_type, args.epoch-1)))
+        'checkpoint/checkpoint_{}_{}_{}.pth'.format(args.dataset, args.model_type, last_epoch)))
     net.eval()
     test_logits = []
     with torch.no_grad():
         logits = net(features_list)
-        test_logits = logits[test_idx]
+        test_logits = logits[test_idx].view(-1)
         # dl.gen_file_for_evaluate(test_idx=test_idx,label=pred)
         pred = test_logits.cpu().numpy()
         print(dl.evaluate(pred))
