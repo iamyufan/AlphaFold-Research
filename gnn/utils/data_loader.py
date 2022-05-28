@@ -298,6 +298,8 @@ class data_loader:
         
         # load node.pkl
         data = pickle.load(open(os.path.join(self.path, 'node.pkl'), 'rb'))
+        e_logits = pickle.load(open(os.path.join(self.path, 'node_e_logits.pkl'), 'rb'))
+        
         nodes['total'] = data.shape[0]
         nodes['count'] = Counter(data['node_type_id'])
         
@@ -306,7 +308,9 @@ class data_loader:
         
         # attr of enzyme
         # e_data['single'] = e_data['node_feature'].apply(lambda x: x['single'])
-        e_attr_logits = np.stack(e_data['node_feature'].apply(lambda x: x['logits']))
+        e_attr = {'logits': e_logits, 'single':np.stack(e_data['node_feature'])}
+        
+        # e_attr_logits = np.stack(e_data['node_feature'].apply(lambda x: x['logits']))
         
         # attr of molecule
         m_attr = np.stack(m_data['node_feature'])
@@ -314,7 +318,7 @@ class data_loader:
         scaler.fit(m_attr)
         m_attr = scaler.transform(m_attr)
         
-        nodes['attr'] = {0:e_attr_logits, 1:m_attr}
+        nodes['attr'] = {0:e_attr, 1:m_attr}
         nodes['shift'] = {0:0, 1:len(e_data)}
 
         return nodes

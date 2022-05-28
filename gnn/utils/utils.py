@@ -18,8 +18,11 @@ def load_data(prefix='iYO844'):
         else:
             features.append(th)
     adjM = sum(dl.links['data'].values())
+    # labels = np.zeros(
+    #     (dl.nodes['count'][0], dl.labels_train['num_labels']), dtype=float)
+
     labels = np.zeros(
-        (dl.nodes['count'][0], dl.labels_train['num_labels']), dtype=float)
+        (dl.nodes['count'][0],), dtype=float)
     val_ratio = 0.2
     train_idx = np.nonzero(dl.labels_train['mask'])[0]
     np.random.shuffle(train_idx)
@@ -31,7 +34,7 @@ def load_data(prefix='iYO844'):
     test_idx = np.nonzero(dl.labels_test['mask'])[0]
     labels[train_idx] = dl.labels_train['data'][train_idx]
     labels[val_idx] = dl.labels_train['data'][val_idx]
-    # labels[test_idx] = dl.labels_test['data'][test_idx]
+    labels[test_idx] = dl.labels_test['data'][test_idx]
     # if prefix != 'IMDB':
     #     labels = labels.argmax(axis=1)
     train_val_test_idx = {}
@@ -59,6 +62,11 @@ def sp_to_spt(mat):
 
 
 def mat2tensor(mat):
+    if type(mat) is dict:
+        result = dict()
+        for key in mat:
+            result[key] = torch.from_numpy(mat[key]).type(torch.FloatTensor)
+        return result
     if type(mat) is np.ndarray:
         return torch.from_numpy(mat).type(torch.FloatTensor)
     return sp_to_spt(mat)

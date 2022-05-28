@@ -15,8 +15,17 @@ def main(args):
 
     # Load data
     features_list, adjM, labels, train_val_test_idx, dl = load_data(args.dataset)
-    features_list = [mat2tensor(features).to(device)
-                     for features in features_list]
+    
+    fea_list = list()
+    for features in features_list:
+        if type(features) == np.ndarray:
+            features = mat2tensor(features).to(device)
+        elif type(features) == dict:
+            features = {k: mat2tensor(v).to(device) for k, v in features.items()}
+        fea_list.append(features)
+        
+    features_list = fea_list
+    
     m_dim = features_list[1].shape[1]
 
     # Set train, val, test index
@@ -119,8 +128,8 @@ if __name__ == '__main__':
     parser.add_argument('--slope', type=float, default=0.05)
 
     # Training options
-    parser.add_argument('--hidden-dim', type=int, default=64,
-                        help='Dimension of the node hidden state. Default is 64.')
+    parser.add_argument('--hidden-dim', type=int, default=128,
+                        help='Dimension of the node hidden state. Default is 128.')
     parser.add_argument('--num-heads', type=int, default=8,
                         help='Number of the attention heads. Default is 8.')
     parser.add_argument('--epoch', type=int, default=10,
