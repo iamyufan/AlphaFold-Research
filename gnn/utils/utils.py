@@ -25,6 +25,7 @@ def load_data(prefix='iYO844'):
 
     labels = np.zeros(
         (dl.nodes['count'][0],), dtype=float)
+    
     val_ratio = 0.2
     train_idx = np.nonzero(dl.labels_train['mask'])[0]
     np.random.shuffle(train_idx)

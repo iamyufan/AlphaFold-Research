@@ -3,7 +3,6 @@ import time
 import torch
 import torch.nn.functional as F
 import torch.nn as nn
-from zmq import device
 from utils.utils import load_data, mat2tensor, regression_loss, EarlyStopping
 from model.gcn import GCN
 from model.gat import GAT
