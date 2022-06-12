@@ -1,131 +1,202 @@
-import sys
 import time
 import torch
 import torch.nn.functional as F
 import torch.nn as nn
-from utils.utils import load_data, mat2tensor, regression_loss, EarlyStopping
-from model.gcn import GCN
-from model.gat import GAT
 import numpy as np
 import dgl
+# data loading modules
+from data.reaction_dataset import ReactionDataset
+from data.load_data import load_data
+# gnn models
+from model.gcn import GCN
+from model.gat import GAT
+# utils
+from utils import regression_loss, EarlyStopping
+from sklearn.metrics import r2_score
 
 
 def main(args):
     # Set device
+    device = 'cpu' #torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     # device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    device = torch.device('cpu')
+
 
     # Load data
-    features_list, adjM, labels, train_val_test_idx, dl = load_data(args.dataset)
-    
-    fea_list = list()
-    for features in features_list:
-        if type(features) == np.ndarray:
-            features = mat2tensor(features).to(device)
-        elif type(features) == dict:
-            features = {k: mat2tensor(v).to(device) for k, v in features.items()}
-        fea_list.append(features)
-        
-    features_list = fea_list
-    
-    m_dim = features_list[1].shape[1]
+    data = load_data(args.dataset, device)
 
-    # Set train, val, test index
-    labels = torch.FloatTensor(labels).to(device)
-    train_idx = train_val_test_idx['train_idx']
-    train_idx = np.sort(train_idx)
-    val_idx = train_val_test_idx['val_idx']
-    val_idx = np.sort(val_idx)
-    test_idx = train_val_test_idx['test_idx']
-    test_idx = np.sort(test_idx)
+    features_list = data['features_list']
+    num_labels = data['num_labels']
+    m_fea_dim = data['m_feature_dim']
 
-    # Build graph
-    g = dgl.from_scipy(adjM+(adjM.T))
-    g = dgl.remove_self_loop(g)
-    g = dgl.add_self_loop(g)
-    g = g.to(device)
+    g = data['g']
 
-    print('> Graph built')
+    train_idx = data['train_val_test_idx']['train_idx']
+    val_idx = data['train_val_test_idx']['val_idx']
+    test_idx = data['train_val_test_idx']['test_idx']
 
-    # Set model
-    num_labels = dl.labels_train['num_labels']
+    labels = data['labels']
 
+    node_count_by_type = dict(data['rd'].nodes['count'])
+
+
+    # Node data loader
+    sampler = dgl.dataloading.MultiLayerFullNeighborSampler(args.num_layers)
+    dataloader = dgl.dataloading.NodeDataLoader(
+        g, train_idx, sampler,
+        batch_size=args.batch_size,
+        shuffle=True,
+        drop_last=False,
+        device=device,
+        num_workers=4)
+
+
+    # Create model
     ## GAT
     if args.model_type == 'gat':
         heads = [args.num_heads] * args.num_layers + [1]
-        net = GAT(g, m_dim, args.hidden_dim, num_labels, args.num_layers,
-                  heads, F.elu, args.dropout, args.dropout, args.slope, False)
+        net = GAT(g=g,
+                 m_fea_dim=m_fea_dim,
+                 num_hidden=args.hidden_dim,
+                 num_layers=args.num_layers,
+                 num_labels=num_labels,
+                 dropout=args.dropout,
+                 device=device,
+                 heads=heads,
+                 activation=F.elu,
+                 feat_drop=args.dropout,
+                 attn_drop=args.dropout,
+                 negative_slope=args.slope)
     ## GCN
     elif args.model_type == 'gcn':
-        net = GCN(g, m_dim, args.hidden_dim, num_labels,
-                  args.num_layers, F.elu, args.dropout)
+        net = GCN(g=g, 
+                m_fea_dim=m_fea_dim, 
+                num_hidden=args.hidden_dim, 
+                num_labels=num_labels, 
+                num_layers=args.num_layers,
+                dropout=args.dropout,
+                device=device)
 
-    net.to(device)
-    
-    print(net)
 
     # Set loss and optimizer
     criterion = nn.MSELoss()
+    optimizer = torch.optim.Adam(net.parameters(), 
+                                    lr=args.lr, 
+                                    weight_decay=args.weight_decay)
 
-    optimizer = torch.optim.Adam(
-        net.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
-    patience = 5
+    # Set early stopping
+    patience = 3
     early_stopping = EarlyStopping(patience, verbose=True)
 
-    # Train model
-    last_epoch = 0
+
+    # Train
     for epoch in range(args.epoch):
-        net.train()
         t_start = time.time()
-        # ==================forward==================
+        epoch_loss = 0
+
         net.train()
-        logits = net(features_list)
+    
+        for input_nodes, output_nodes, blocks in dataloader:
+            # ================== forward ==================
+            blocks = [b.to(device) for b in blocks]
 
-        train_loss = criterion(logits[train_idx], labels[train_idx])
+            output_labels = labels[output_nodes.tolist()]
+            output_predictions = net(node_count_by_type, blocks, features_list)
 
-        # ==================backward=================
+            # ================== backward ==================
+            loss = criterion(output_predictions.view(-1), output_labels)
+            epoch_loss += loss.item()
+
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+        # ==================== log ====================
+        t_end = time.time()
+
+        print('Epoch {:05d} | Train_Loss: {:.4f} | Time: {:.4f}'.format(
+            epoch, epoch_loss, t_end-t_start))
+
+        torch.save(net.state_dict(),
+                   'checkpoints/checkpoint_{}_{}_{}.pth'.format(args.dataset, args.model_type, epoch))
+
+        # ==================== validatation ====================
+        t_start = time.time()
+        net.eval()
+        with torch.no_grad():
+            output_predictions = net.inference(node_count_by_type, features_list)
+            val_loss = regression_loss(output_predictions[val_idx].view(-1), labels[val_idx])
+
+        early_stopping(val_loss, net, model_type=args.model_type)
+        t_end = time.time()
+
+        print('Epoch {:05d} | Val_Loss {:.4f} | Time(s) {:.4f}'.format(
+            epoch, val_loss.item(), t_end - t_start))
+        print()
+
+        if early_stopping.early_stop:
+            print("> Early stopping!")
+            break
+
+    # Set early stopping
+    print('------ Full Training ------')
+    patience = 3
+    early_stopping = EarlyStopping(patience, verbose=True)
+
+    net.load_state_dict(torch.load(f'checkpoint_{args.model_type}.pt'))
+    
+    for epoch in range(args.epoch):
+        t_start = time.time()
+        epoch_loss = 0
+
+        net.train()
+
+        output_labels = labels[train_idx]
+        output_predictions = net.inference(node_count_by_type, features_list)
+
+        loss = criterion(output_predictions[train_idx].view(-1), output_labels)
+
+        epoch_loss += loss.item()
+
         optimizer.zero_grad()
-        train_loss.backward()
+        loss.backward()
         optimizer.step()
 
         t_end = time.time()
 
-        # ====================log====================
-        print('Epoch {:05d} | Train_Loss: {:.4f} | Time: {:.4f}'.format(
-            epoch, train_loss.item(), t_end-t_start))
+        print('Epoch {:05d} {} | Train_Loss: {:.4f} | Time: {:.4f}'.format(
+            epoch, 'full_training', epoch_loss, t_end-t_start))
 
         # ====================validatation====================
         t_start = time.time()
         net.eval()
         with torch.no_grad():
-            logits = net(features_list)
-            val_loss = regression_loss(logits[val_idx], labels[val_idx])
+            logits = net.inference(node_count_by_type, features_list)
+            val_loss = regression_loss(logits[val_idx].view(-1), labels[val_idx])
         t_end = time.time()
         # print validation info
-        print('Epoch {:05d} | Val_Loss {:.4f} | Time(s) {:.4f}'.format(
-            epoch, val_loss.item(), t_end - t_start))
+        print('Epoch {:05d} {} | Val_Loss {:.4f} | Time(s) {:.4f}'.format(
+            epoch, 'full_training', val_loss.item(), t_end - t_start))
         print()
         torch.save(net.state_dict(),
-                   'checkpoint/checkpoint_{}_{}_{}.pth'.format(args.dataset, args.model_type, epoch))
-        early_stopping(val_loss, net)
+                   'checkpoints/checkpoint_{}_{}_{}.pth'.format(args.dataset, args.model_type, epoch+args.epoch))
+        early_stopping(val_loss, net, model_type=args.model_type)
         if early_stopping.early_stop:
             print("> Early stopping!")
             last_epoch = epoch
             break
 
-    # Test model
-    net.load_state_dict(torch.load(
-        'checkpoint/checkpoint_{}_{}_{}.pth'.format(args.dataset, args.model_type, last_epoch)))
-    net.eval()
-    test_logits = []
-    with torch.no_grad():
-        logits = net(features_list)
-        test_logits = logits[test_idx].view(-1)
-        # dl.gen_file_for_evaluate(test_idx=test_idx,label=pred)
-        pred = test_logits.cpu().numpy()
-        print(dl.evaluate(pred))
 
+    # Test model
+    net.load_state_dict(torch.load(f'checkpoint_{args.model_type}.pt'))
+    net.eval()
+    with torch.no_grad():
+        output_labels = labels[test_idx].cpu().numpy()
+        output_predictions = net.inference(node_count_by_type, features_list)
+        output_predictions = output_predictions.view(-1)[test_idx].cpu().numpy()
+        km_r2 = r2_score(output_labels, output_predictions)
+        print('R2 score for km: {}'.format(km_r2))
+        
 
 if __name__ == '__main__':
     import argparse
@@ -141,14 +212,15 @@ if __name__ == '__main__':
     parser.add_argument('--slope', type=float, default=0.05)
 
     # Training options
+    parser.add_argument('--batch-size', type=int, default=10)
     parser.add_argument('--hidden-dim', type=int, default=128,
                         help='Dimension of the node hidden state. Default is 128.')
     parser.add_argument('--num-heads', type=int, default=8,
                         help='Number of the attention heads. Default is 8.')
-    parser.add_argument('--epoch', type=int, default=10,
+    parser.add_argument('--epoch', type=int, default=5,
                         help='Number of epochs.')
     parser.add_argument('--lr', type=float, default=5e-4)
-    parser.add_argument('--dropout', type=float, default=0.5)
+    parser.add_argument('--dropout', type=float, default=0.1)
     parser.add_argument('--weight-decay', type=float, default=1e-4)
 
     args = parser.parse_args()
