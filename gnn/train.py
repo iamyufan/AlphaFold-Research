@@ -118,7 +118,7 @@ def main(args):
             epoch, epoch_loss, t_end-t_start))
 
         torch.save(net.state_dict(),
-                   'checkpoints/checkpoint_{}_{}_{}.pth'.format(args.dataset, args.model_type, epoch))
+                   'checkpoints/train/checkpoint_{}_{}_{}.pth'.format(args.dataset, args.model_type, epoch))
 
         # ==================== validatation ====================
         t_start = time.time()
@@ -138,7 +138,6 @@ def main(args):
             print("> Early stopping!")
             break
 
-    # Set early stopping
     print('------ Full Training ------')
     patience = 3
     early_stopping = EarlyStopping(patience, verbose=True)
@@ -179,7 +178,7 @@ def main(args):
             epoch, 'full_training', val_loss.item(), t_end - t_start))
         print()
         torch.save(net.state_dict(),
-                   'checkpoints/checkpoint_{}_{}_{}.pth'.format(args.dataset, args.model_type, epoch+args.epoch))
+                   'checkpoints/train/checkpoint_{}_{}_{}.pth'.format(args.dataset, args.model_type, epoch+args.epoch))
         early_stopping(val_loss, net, model_type=args.model_type)
         if early_stopping.early_stop:
             print("> Early stopping!")
