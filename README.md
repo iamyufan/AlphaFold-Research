@@ -1,8 +1,8 @@
 # AlphaFold-Research
 
-Using AlphaFold and GNN to Predict Catalytic Efficiency of Enzymes
+<!-- Using AlphaFold and GNN to Predict Catalytic Efficiency of Enzymes -->
 
-## Model Scratch
+<!-- ## Model Scratch -->
 
 <!-- ![model](img/scratch.png) -->
 
