@@ -6,7 +6,7 @@ from sklearn.decomposition import PCA
 import os
 
 AF2_OUTPUT_DIR = '/home/hgao53/alphafold_new/alphafold/final_bsu/'
-SAVE_DIR = '/scratch/hgao53/'
+SAVE_DIR = '../raw/iYO844/'
 
 
 def pca_main(data):
@@ -45,11 +45,11 @@ def pca_main(data):
 
     # result
     result = dict()
-    # padded_logits = np.pad(logits_after_PCA, ((0, 1600-logits_after_PCA.shape[0]), (0, 1600-logits_after_PCA.shape[0]), (0, 0)), 'constant')
-    # padded_single = np.pad(single_after_PCA, ((0, 1600-single_after_PCA.shape[0])), 'constant')
+    padded_logits = np.pad(logits_after_PCA, ((0, 1600-logits_after_PCA.shape[0]), (0, 1600-logits_after_PCA.shape[0]), (0, 0)), 'constant')
+    padded_single = np.pad(single_after_PCA, ((0, 1600-single_after_PCA.shape[0])), 'constant')
     
-    result['logits'] = logits_after_PCA
-    result['single'] = single_after_PCA
+    result['logits'] = padded_logits
+    result['single'] = padded_single
 
     return result, enzyme_len
 
@@ -72,10 +72,10 @@ for root, dirs, files in os.walk(AF2_OUTPUT_DIR):
             # with open(f'{SAVE_DIR}{file}', 'wb') as f:
             #     pickle.dump(result_dict, f)
             
-with open(f'{SAVE_DIR}iYO844_feature.pkl', 'wb') as f:
+with open(f'{SAVE_DIR}padded_features.pkl', 'wb') as f:
     pickle.dump(e_feature_list, f)
 
-print(f'Enzyme feature saved to {SAVE_DIR}iYO844_feature.pkl')
+print(f'Enzyme feature saved to {SAVE_DIR}padded_features.pkl')
 print(f'Number of enzymes: {len(e_feature_list)}')
 print(f'Max enzyme length: {max_enzyme_len}')
 print(f'Average enzyme length: {np.mean(list(e_feature_list.values())[0].values())}')
