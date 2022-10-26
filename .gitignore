@@ -4,3 +4,6 @@ raw/
 **/.DS_Store
 **/._.DS_Store
 datasets/iYO844/*
+gnn/checkpoints/*
+.DS_Store
+.DS_Store
