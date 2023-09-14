@@ -29,22 +29,22 @@ Use PCA to reduce the dimensionality of the `logits` in the output file `XXXXX.p
 
 `XXXXX.pkl` is a Python dict object denoting a AlphaFold output of a protein sequence with length of `e_dim`, whose `dict_keys` is given by
 
-- 'distogram', 
-  - 'bin_edges'
-  - **'logits'**
-- 'experimentally_resolved', 
-- 'masked_msa', 
-- 'predicted_lddt', 
-- 'representations', 
-  - 'msa'
-  - 'msa_first_row'
-  - 'pair'
-  - **'single'**
-  - 'structure_module'
-- 'structure_module', 
-- 'plddt'
+- `distogram`, 
+  - `bin_edges`
+  - **`logits`**
+- `experimentally_resolved`, 
+- `masked_msa`, 
+- `predicted_lddt`, 
+- `representations`, 
+  - `msa`
+  - `msa_first_row`
+  - `pair`
+  - **`single`**
+  - `structure_module`
+- `structure_module`, 
+- `plddt`
 
-We only need the **'logits'** and **'single'** for the enzyme features.
+We only need the **`logits`** and **`single`** for the enzyme features.
 
 1. Modify the `./pca/pca.py` to change the `AF2_OUTPUT_DIR` to the corresponding path where the actual AlphaFold outputs are saved.
 
